@@ -1,0 +1,157 @@
+html {
+  height: 100%;
+}
+
+body {
+  font: 14px "Lato", "Lucida Grande", Helvetica, Arial, sans-serif;
+  position: relative;
+  height: 100%;
+  background-color: #111;
+}
+
+a {
+  color: #00B7FF;
+}
+
+h1 {
+  margin: 10px;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+h2 { 
+  margin: 20px 10px 10px;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+.blackout {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 200px;
+  margin-bottom: 0;
+  padding: 30px 0;
+  font-weight: 400;
+  font-size: 18px;
+  background-color: #222;
+  color: #eee;
+}
+
+.blackout:hover {
+  background-color: #111;
+}
+
+.ver {
+  opacity: 0.4;
+}
+
+button {
+  width: 100%;
+  background-color: #aaa;
+  border: 0;
+  margin-bottom: 2px;
+  padding: 10px 0;
+  outline: none;
+  font-family: "Lato", "Lucida Grande", sans-serif;
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+.color-btn, .allon-btn {
+  width: 49.5%;
+  float: left;
+  font-weight: 400;
+}
+
+.color-btn:hover, .allon-btn:hover {
+  background-color: auto;
+}
+
+.color-btn:nth-child(even), .allon-btn:nth-child(even) {
+  float: right;
+}
+
+.option2 {
+  display: none;
+}
+
+.wave-options {
+}
+
+.beacon-options {
+}
+
+.beacon-text {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: normal;
+  padding: 10px;
+  color: #aaa;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #ccc;
+}
+
+.active {
+  background-color: #62D64D;
+}
+
+button.active:hover {
+  background-color: #62D64D;
+}
+
+.container {
+  height: 100%;
+}
+
+.run-btn {
+  margin: 0 auto;
+  font-weight: 600;
+  padding: 30px 0;
+  background-color: #F01111;
+  color: #eee;
+  font-size: 30px;
+}
+
+.run-btn:hover {
+  background-color: #FA5A5A;
+}
+
+.view-larger {
+  border: 1px solid #fff;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 10px !important;
+  transform: translate(-10px,-10px);
+}
+.controls {
+  display: inline-block;
+  background-color: #333;
+  vertical-align: top;
+  width: 200px;
+  height: 100%;
+  color: #eee;
+  float: left;
+  margin-right: 50px;
+}
+
+.map {
+  background-color: #111;
+  display: inline-block;
+  vertical-align: top;
+  height: 100%;
+  width: 700px;
+  float: left;
+  position: relative;
+}
+
+.seat {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: #333;
+}
