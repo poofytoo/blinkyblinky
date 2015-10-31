@@ -155,3 +155,31 @@ button.active:hover {
   height: 2px;
   background-color: #333;
 }
+
+.bash {
+  left: 200px;
+  right: 0;
+  position: fixed;
+  top: 0;
+  display: none;
+}
+
+.prompt {
+  background-color: #fff;
+  width: 100%;
+  outline: none;
+  color: #000;
+  padding: 10px;
+  font: 14px monospace;
+  border: none;
+}
+
+.userInput {
+  color: #666;
+}
+
+.response {
+  color: #ddd;
+  padding: 10px;
+  font: 14px monospace;
+}

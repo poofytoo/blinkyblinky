@@ -19,20 +19,23 @@ Send a thing! Send a thing! Do it! Do it!
 Manuallllly!
 */
 router.get('/manualserial', function(req, res, next) {
-  bytes = req.query.s.split(' ')
+  bytes = req.query.s.replace(/\s\s+/g, ' ').split(' ')
   bytesDec = []
-
+  newBytes = []
   for (i in bytes) {
-    bytesDec.push(parseInt(bytes[i], 16))
+    if (bytes[i]) {
+      bytesDec.push(parseInt(bytes[i], 16))
+      newBytes.push(bytes[i])
+    }
   }
   if (s) {
     s.write(bytesDec, function(err, results) {
       console.log('err ' + err);
       console.log('results ' + results);
     });
-    res.send('ok<br />[' + bytes + ']<br />[' + bytesDec + ']')
+    res.send('ok<br />hex: [' + newBytes + ']<br />dec: [' + bytesDec + ']')
   } else {
-    res.send('no serial<br />[' + bytes + ']<br />[' + bytesDec + ']')
+    res.send('no serial<br />hex: [' + newBytes + ']<br />dec: [' + bytesDec + ']')
   }
 })
 
@@ -45,8 +48,6 @@ router.get('/setsingle', function(req, res, next) {
       console.log('err ' + err);
       console.log('results ' + results);
     });
-
-    console.log('blkc')
   } else {
   // 1 - 40, 41 - 80, 81 - B0
   // 64, 128, 192

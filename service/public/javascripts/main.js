@@ -22,9 +22,12 @@ function setSeatColor($this, seatColor) {
 
 var updateRate = 50;
 var prevF11Color = '';
+var lastInputPrompt = '';
 
 $(document).bind('keydown', 'space', function () {
   $('#F_11').addClass('view-larger')
+  $('.bash').show();
+  $('.bash').find('input').focus();
 });
 
 updateSeat = setInterval(function() {
@@ -157,6 +160,21 @@ $(document).on('click', '.blackout-btn', function(e) {
   } 
 })
 
+$(document).on('keydown', '.prompt', function(e) {
+  $r = $('.response')
+  $p = $('.prompt')
+  if (e.which == 13) {
+    sendData = {s:$p.val()}
+    $.get('/manualserial', sendData, function(data) {
+      $r.prepend('<span class="userInput">> ' + $p.val() + '</span><br />');
+      $r.prepend(data + '<br />');
+      $p.val('');
+    })
+    lastInputPrompt = $(this).val();
+  } else if (e.which == 38) {
+    $p.val(lastInputPrompt);
+  }
+});
 
 function startLights($this) {
   var f = $this.data('func')
