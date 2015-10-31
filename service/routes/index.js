@@ -14,6 +14,28 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+/*
+Send a thing! Send a thing! Do it! Do it!
+Manuallllly!
+*/
+router.get('/manualserial', function(req, res, next) {
+  bytes = req.query.s.split(' ')
+  bytesDec = []
+
+  for (i in bytes) {
+    bytesDec.push(parseInt(bytes[i], 16))
+  }
+  if (s) {
+    s.write(bytesDec, function(err, results) {
+      console.log('err ' + err);
+      console.log('results ' + results);
+    });
+    res.send('ok<br />[' + bytes + ']<br />[' + bytesDec + ']')
+  } else {
+    res.send('no serial<br />[' + bytes + ']<br />[' + bytesDec + ']')
+  }
+})
+
 router.get('/setsingle', function(req, res, next) {
   // black
 
