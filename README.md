@@ -1,2 +1,2 @@
 # blinkyblinky
-one fish, two fish, blink, blink, blink.
+one fish, two fish, blink, blink, blink. CONFLICT
