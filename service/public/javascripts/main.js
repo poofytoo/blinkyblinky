@@ -24,10 +24,12 @@ var updateRate = 50;
 var prevF11Color = '';
 var lastInputPrompt = '';
 
-$(document).bind('keydown', 'space', function () {
-  $('#F_11').addClass('view-larger')
-  $('.bash').show();
-  $('.bash').find('input').focus();
+$(document).on('keydown', 'body', function (e) {
+  if (e.which == 32) {
+    $('#F_11').addClass('view-larger')
+    $('.bash').show();
+    $('.bash').find('input').focus();
+  }
 });
 
 updateSeat = setInterval(function() {
@@ -173,6 +175,10 @@ $(document).on('keydown', '.prompt', function(e) {
     lastInputPrompt = $(this).val();
   } else if (e.which == 38) {
     $p.val(lastInputPrompt);
+  } else if (e.which == 27) {
+    $('.bash').hide();
+    $('#F_11').removeClass('view-larger')
+    $('.response').text('')
   }
 });
 
