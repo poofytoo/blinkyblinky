@@ -147,8 +147,6 @@ function startSerialPort(port) {
 
       }, 600)
 */
-
-
     });
 
 }

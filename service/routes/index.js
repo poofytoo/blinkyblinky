@@ -12,7 +12,7 @@ function hex2a(hexx) {
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.render('index', {
-        title: 'Express'
+        title: '2.009 Blinky'
     });
 });
 
