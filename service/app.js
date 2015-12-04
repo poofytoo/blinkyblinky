@@ -108,13 +108,18 @@ function startSerialPort(port) {
       });
     }, 1000);
 */
+
+/*
+
+TESTING RGB
+*/
       setInterval(function() {
         data = hex2a("C0")
         console.log(data);
         s.write([55, 55, 0, 50, 0, 0, 43], function(err, results) {
           console.log(results + 't');
         });
-      }, 1000)
+      }, 900)
 
       setTimeout(function() {
 
@@ -124,7 +129,7 @@ function startSerialPort(port) {
         s.write([55, 55, 0, 0, 50, 0, 43], function(err, results) {
           console.log(results);
         });
-      }, 1000)
+      }, 900)
 
       }, 300)
 
@@ -137,9 +142,11 @@ function startSerialPort(port) {
         s.write([55, 55, 0, 0, 0, 50, 43], function(err, results) {
           console.log(results);
         });
-      }, 1000)
+      }, 900)
 
       }, 600)
+
+
 
   });
 
