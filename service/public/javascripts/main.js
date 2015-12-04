@@ -77,8 +77,8 @@ $(document).on('keydown', 'body', function(e) {
     }
 }, updateRate);*/
 
-var waveIntervalMeter = [1000 / 4, 1000 / 3, 1000 / 2, 1000]
-var waveIntervalLevel = waveIntervalMeter.length - 1
+var waveIntervalMeter = [1000 / 2, 1000 / 1.5, 1000 / 1.0, 1000 / 0.75, 1000 / 0.5]
+var waveIntervalLevel = 2
 var waveRate = waveIntervalMeter[waveIntervalLevel]
 
 function startTheWave() {
