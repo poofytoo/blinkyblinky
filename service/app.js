@@ -108,13 +108,38 @@ function startSerialPort(port) {
       });
     }, 1000);
 */
+      setInterval(function() {
+        data = hex2a("C0")
+        console.log(data);
+        s.write([55, 55, 0, 50, 0, 0, 43], function(err, results) {
+          console.log(results + 't');
+        });
+      }, 1000)
+
       setTimeout(function() {
-      data = hex2a("C0")
-      console.log(data);
-      s.write([180], function(err, results) {
-        console.log(results);
-      });
-    }, 100)
+
+      setInterval(function() {
+        data = hex2a("C0")
+        console.log(data);
+        s.write([55, 55, 0, 0, 50, 0, 43], function(err, results) {
+          console.log(results);
+        });
+      }, 1000)
+
+      }, 300)
+
+
+      setTimeout(function() {
+
+      setInterval(function() {
+        data = hex2a("C0")
+        console.log(data);
+        s.write([55, 55, 0, 0, 0, 50, 43], function(err, results) {
+          console.log(results);
+        });
+      }, 1000)
+
+      }, 600)
 
   });
 
