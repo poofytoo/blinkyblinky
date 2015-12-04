@@ -1,3 +1,11 @@
+const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "silver"]
+const BLACKOUT_COMMAND = {
+    s: "37 37 0 2 3 3 2B"
+}
+const DIM_COMMAND = {
+    s: "37 37 0 6 A A 2B"
+}
+
 var root = new Firebase("https://blinkyblinky.firebaseio.com")
 var colorsLED = {};
 
@@ -33,5 +41,3 @@ colorsCSS["blue"] = "#03a9f4"
 colorsCSS["purple"] = "#d500f9"
 colorsCSS["silver"] = "#9e9e9e"
 colorsCSS["pink"] = "#ff4081"
-
-colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "silver"]

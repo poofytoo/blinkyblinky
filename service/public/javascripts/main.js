@@ -267,9 +267,6 @@ $(document).on('click', '.color-btn', function(e) {
     startLights($(this))
 })
 
-const BLACKOUT_COMMAND = {
-    s: "37 37 0 2 3 3 2B"
-}
 $(document).on('click', '.blackout-btn', function(e) {
     clearInterval(timer);
     timer = setInterval(function() {
@@ -280,12 +277,9 @@ $(document).on('click', '.blackout-btn', function(e) {
                 setSeatColor($this, '#333333')
             }
         })
-    }, 400)
+    }, 500)
 });
 
-const DIM_COMMAND = {
-    s: "37 37 0 6 A A 2B"
-}
 $(document).on('click', '.dim-btn', function(e) {
     clearInterval(timer);
     timer = setInterval(function() {
@@ -296,7 +290,7 @@ $(document).on('click', '.dim-btn', function(e) {
                 setSeatColor($this, '#666666')
             }
         })
-    }, 400)
+    }, 500)
 })
 
 $(document).on('click', '.fade-btn', function(e) {
