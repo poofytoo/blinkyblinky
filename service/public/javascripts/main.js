@@ -204,11 +204,13 @@ $(document).on('click', '.map', function(e) {
   }
 })
 
+var active;
 $(document).on('click', '.command', function(e) {
   $this = $(this)
   var f = $this.data('func')
   $('.command').removeClass('active')
   $this.addClass('active')
+  active = f
   $('.option2').hide();
   $('.' + f + '-options').show();
   allowBeaconStart = false;
@@ -264,28 +266,30 @@ $(document).on('keydown', '.prompt', function(e) {
 });
 
 $(document).on('keydown', function(e){
-  if (e.which == 87) {
-    // "W" - increase brightness
-    brightnessLevel = Math.min(brightnessLevel + 1, brightnessMeter.length - 1)
-    twinkleBrightness = brightnessMeter[brightnessLevel]
-    $("#twinkle-brightness").html(twinkleBrightness)
-  } else if (e.which == 83) {
-    // "S" - decrease brightness
-    brightnessLevel = Math.max(brightnessLevel - 1, 0)
-    twinkleBrightness = brightnessMeter[brightnessLevel]
-    $("#twinkle-brightness").html(twinkleBrightness)
-  } else if (e.which == 68) {
-    // "D" - faster twinkle rate
-    twinkleIntervalLevel = Math.max(twinkleIntervalLevel - 1, 0)
-    twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
-    clearInterval(twinkleTimer)
-    startTwinkle(twinkleInterval)
-  } else if (e.which == 65) {
-    // "A" - slower twinkle rate
-    twinkleIntervalLevel = Math.min(twinkleIntervalLevel + 1, twinkleIntervalMeter.length - 1)
-    twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
-    clearInterval(twinkleTimer)
-    startTwinkle(twinkleInterval)
+  if (active == "twinkle"){
+    if (e.which == 87) {
+      // "W" - increase brightness
+      brightnessLevel = Math.min(brightnessLevel + 1, brightnessMeter.length - 1)
+      twinkleBrightness = brightnessMeter[brightnessLevel]
+      $("#twinkle-brightness").html(twinkleBrightness)
+    } else if (e.which == 83) {
+      // "S" - decrease brightness
+      brightnessLevel = Math.max(brightnessLevel - 1, 0)
+      twinkleBrightness = brightnessMeter[brightnessLevel]
+      $("#twinkle-brightness").html(twinkleBrightness)
+    } else if (e.which == 68) {
+      // "D" - faster twinkle rate
+      twinkleIntervalLevel = Math.max(twinkleIntervalLevel - 1, 0)
+      twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
+      clearInterval(twinkleTimer)
+      startTwinkle(twinkleInterval)
+    } else if (e.which == 65) {
+      // "A" - slower twinkle rate
+      twinkleIntervalLevel = Math.min(twinkleIntervalLevel + 1, twinkleIntervalMeter.length - 1)
+      twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
+      clearInterval(twinkleTimer)
+      startTwinkle(twinkleInterval)
+    }
   }
 })
 
