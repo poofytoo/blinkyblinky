@@ -20,6 +20,16 @@ function setSeatColor($this, seatColor) {
   // Use this to transmit colors to the board until websockets
 }
 
+function setSeatColorBrightness($this, seatColor, seatAlpha) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(seatColor);
+  result = {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+  }
+  $this.css('background-color', "rgba(" + result.r + ", " + result.g + ", " + result.b + ", " + seatAlpha + ")")
+}
+
 function setRowColor(row, color) {
   for (i in seats_by_row[row]) {
     index = parseInt(i) + 1
@@ -53,7 +63,7 @@ updateSeat = setInterval(function() {
   currF11Color = $('#F_11').css('background-color');
   if (prevF11Color != currF11Color) {
     prevF11Color = currF11Color;
-    results = currF11Color.replace('rgb(', '').replace(' ','').replace('+','').replace(')','').split(',')
+    results = currF11Color.replace(/rgb(a)?\(/, '').replace(' ','').replace('+','').replace(')','').split(',')
     data = {
       r: results[0],
       g: results[1],
@@ -86,6 +96,30 @@ function startTheWave() {
       setSeatColor($this, seatColor);
     }*/
   }, animationRefreshRate);
+}
+
+var brightnessMeter = [0, 10, 20, 40, 80, 160, 255]
+var brightnessLevel = brightnessMeter.length - 1
+var twinkleIntervalMeter = [1000/20, 1000/15, 1000/10, 1000/5, 1000/4, 1000/2.5, 1000/2, 1000]
+var twinkleIntervalLevel = 0
+var twinkleBrightness = brightnessMeter[brightnessLevel]
+var twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
+var twinkleTimer;
+function startTwinkle(interval) {
+  $("#twinkle-rate").html(Math.round(10000/twinkleInterval)/10 + " Hz")
+  twinkleTimer = setInterval(function() {
+    command = "37 37 4 " + twinkleBrightness.toString(16) + " 2B"
+    sendData = {s:command}
+    // console.log(command)
+    $.get('/manualserial', sendData, function(data) {
+      console.log(data)
+    })
+    for (i in seats) {
+      $this = $('#' + i)
+      seatColor = getRandomColor();
+      setSeatColorBrightness($this, seatColor, 0.3 + 0.7*twinkleBrightness/255);
+    }
+  }, interval)
 }
 
 function startPropogate(interval, color) {
@@ -229,14 +263,47 @@ $(document).on('keydown', '.prompt', function(e) {
   }
 });
 
+$(document).on('keydown', function(e){
+  if (e.which == 87) {
+    // "W" - increase brightness
+    brightnessLevel = Math.min(brightnessLevel + 1, brightnessMeter.length - 1)
+    twinkleBrightness = brightnessMeter[brightnessLevel]
+    $("#twinkle-brightness").html(twinkleBrightness)
+  } else if (e.which == 83) {
+    // "S" - decrease brightness
+    brightnessLevel = Math.max(brightnessLevel - 1, 0)
+    twinkleBrightness = brightnessMeter[brightnessLevel]
+    $("#twinkle-brightness").html(twinkleBrightness)
+  } else if (e.which == 68) {
+    // "D" - faster twinkle rate
+    twinkleIntervalLevel = Math.max(twinkleIntervalLevel - 1, 0)
+    twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
+    clearInterval(twinkleTimer)
+    startTwinkle(twinkleInterval)
+  } else if (e.which == 65) {
+    // "A" - slower twinkle rate
+    twinkleIntervalLevel = Math.min(twinkleIntervalLevel + 1, twinkleIntervalMeter.length - 1)
+    twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
+    clearInterval(twinkleTimer)
+    startTwinkle(twinkleInterval)
+  }
+})
+
 function startLights($this) {
   var f = $this.data('func')
   clearInterval(timer);
   switch(f) {
     case 'wave':
+      clearInterval(twinkleTimer);
       startTheWave();
       break;
+    case 'twinkle':
+      $("#twinkle-brightness").html(twinkleBrightness)
+      $("#twinkle-rate").html(Math.round(10000/twinkleInterval)/10 + " Hz")
+      startTwinkle(twinkleInterval);
+      break;
     case 'allon':
+      clearInterval(twinkleTimer);
       color = $this.css('background-color');
       for (i in seats) {
         $this = $('#' + i)
@@ -246,10 +313,12 @@ function startLights($this) {
     case 'beacon':
       break;
     case 'propogate':
+      clearInterval(twinkleTimer);
       color = $this.css('background-color');
       startPropogate(150, color);
       break;
     case 'slots':
+      clearInterval(twinkleTimer);
       color = $this.css('background-color');
       startTheSlots(2000, 4000, color);
       break;
