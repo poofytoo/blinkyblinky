@@ -5,7 +5,7 @@ var state = '';
 var audWidth = 0;
 var audHeight = 0;
 var setDateStart = new Date().getTime();
-var animationRefreshRate = 80;
+var animationRefreshRate = 150;
 
 var baconOriginX = 0;
 var baconOriginY = 0;
@@ -18,6 +18,23 @@ var timer;
 function setSeatColor($this, seatColor) {
   $this.css('background-color', seatColor)
   // Use this to transmit colors to the board until websockets
+}
+
+function setRowColor(row, color) {
+  for (i in seats_by_row[row]) {
+    index = parseInt(i) + 1
+    $this = $('#' + seats_by_row[row][i].id)
+    $this.css('background-color', color)
+  }
+  command = "37 37 1 " + color.substring(1,3) + " " + color.substring(3,5) + " " + color.substring(5,7) + " " + getRowIndex(row) + " 2B"
+    sendData = {s:command}
+    // console.log(command)
+    $.get('/manualserial', sendData, function(data) {
+      //$r.prepend('<span class="userInput">> ' + command + '</span><br />');
+      //$r.prepend(data + '<br />');
+      //$p.val('');
+      // console.log(data)
+    })
 }
 
 var updateRate = 50;
@@ -48,17 +65,47 @@ updateSeat = setInterval(function() {
   }
 }, updateRate);
 
+waveRate = 500
 function startTheWave() {
   setDateStart = new Date().getTime();
   clearInterval(timer);
+  a = 0
   timer = setInterval(function() {
     dateOffset = new Date().getTime();
-    for (i in seats) {
+    for (row in seats_by_row) {
+      index = getRowIndex(row)
+      if (index >= 1 && index <= 14) {
+        a += 0.8
+        color = getSolidColor(seats_by_row[row][0].x, seats_by_row[row][0].y, (dateOffset-setDateStart)/1000 + a);
+        setTimeout(setRowColor(row, color), waveRate)
+      }
+    }
+    /*for (i in seats) {
       $this = $('#' + i)
       seatColor = getSolidColor(seats[i].x, seats[i].y, (dateOffset-setDateStart)/1000);
       setSeatColor($this, seatColor);
-    }
+    }*/
   }, animationRefreshRate);
+}
+
+function startPropogate(interval, color) {
+  rgbColor = color.replace('rgb(', '').replace(' ','').replace('+','').replace(')','').split(',')
+  function componentToHex(c) {
+    var hex = parseInt(c).toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+  hexColor = '#' + componentToHex(rgbColor[0]) + componentToHex(rgbColor[1])+ componentToHex(rgbColor[2])
+  var row_ind = 0
+  timer = setInterval(function(){
+    if (row_ind < 14) {
+      row_ind += 1
+    } else {
+      clearInterval(timer)
+    }
+    console.log(row_ind)
+    console.log(getRowId(row_ind))
+    setRowColor(getRowId(row_ind), hexColor)
+  }, interval)
 }
 
 function startTheBacon(x, y) {
@@ -100,7 +147,7 @@ function startTheSlots(timeStayRandom, timeToReveal, finalColor) {
 }
 
 function getSolidColor(x, y, offset) {
-  hue = (((x/audWidth + offset)*100)%100)/100
+  hue = (((offset)*100)%100)/100
   rgbColor = HSLToRGB(hue, 0.85, 0.5)
   return '#' + rgbColor[0].toString(16) + rgbColor[1].toString(16) + rgbColor[2].toString(16);
 }
@@ -197,6 +244,10 @@ function startLights($this) {
       } 
       break;
     case 'beacon':
+      break;
+    case 'propogate':
+      color = $this.css('background-color');
+      startPropogate(150, color);
       break;
     case 'slots':
       color = $this.css('background-color');
