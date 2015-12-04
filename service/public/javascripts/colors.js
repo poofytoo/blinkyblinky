@@ -1,16 +1,32 @@
-colorsLED = {}
-colorsLED["red"] = ["50", "0", "0"]
-colorsLED["orange"] = ["30", "30", "0"] 
-colorsLED["yellow"] = ["30", "50", "5"]
-colorsLED["green"] = ["5", "50", "10"]
-colorsLED["blue"] = ["0", "10", "50"]
-colorsLED["purple"] = ["30", "0", "50"]
-colorsLED["silver"] = ["25", "40", "40"]
-colorsLED["pink"] = ["50", "20", "40"]
+var root = new Firebase("https://blinkyblinky.firebaseio.com")
+var colorsLED = {};
+
+root.child("colorsLED").on("value", function(ss) {
+    temp = ss.val()
+    for (color in temp) {
+        colorsLED[color] = temp[color].split(" ")
+        for (channel in colorsLED[color]) {
+            $("input#" + color + "-" + channel).val(colorsLED[color][channel])
+        }
+    }
+});
+
+$(document).ready(function() {
+    $(".color-input>input").on("change", function() {
+        color = $(this).attr("id").split("-")[0];
+        R = $("#" + color + "-0").val()
+        G = $("#" + color + "-1").val()
+        B = $("#" + color + "-2").val()
+        o = {}
+        o[color] = [R, G, B].join(" ")
+        root.child("colorsLED").update(o)
+    })
+});
+
 
 colorsCSS = {}
 colorsCSS["red"] = "#ff1744"
-colorsCSS["orange"] = "#ff9800" 
+colorsCSS["orange"] = "#ff9800"
 colorsCSS["yellow"] = "#ffeb3b"
 colorsCSS["green"] = "#4caf50"
 colorsCSS["blue"] = "#03a9f4"

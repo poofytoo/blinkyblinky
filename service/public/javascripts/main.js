@@ -35,7 +35,7 @@ function setSeatColorBrightness($this, colorCSS, seatAlpha) {
 }
 
 function setRowColor(row, colorLED, colorCSS) {
-    command = "37 37 1 " + colorLED.join(" ") + " " + getRowIndex(row) + " 2B"
+    command = "37 37 1 " + colorLED.join(" ") + " " + getRowIndex(row).toString(16).toUpperCase() + " 2B"
     sendData = {
         s: command
     }
