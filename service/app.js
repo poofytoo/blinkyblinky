@@ -94,7 +94,7 @@ function startSerialPort(port) {
             console.log('data received: ' + data);
           });
         */
-        data = [55, 55, 4, 0, 43]
+        data = [55, 55, 0, 2, 3, 3, 43]
         s.write(data, function(err, results) {
             console.log(results);
         });
