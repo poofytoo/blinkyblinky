@@ -77,8 +77,8 @@ $(document).on('keydown', 'body', function(e) {
     }
 }, updateRate);*/
 
-var waveIntervalMeter = [1000 / 20, 1000 / 15, 1000 / 10, 1000 / 5, 1000 / 4, 1000 / 2.5, 1000 / 2, 1000]
-var waveIntervalLevel = 4
+var waveIntervalMeter = [1000 / 4, 1000 / 3, 1000 / 2, 1000]
+var waveIntervalLevel = waveIntervalMeter.length - 1
 var waveRate = waveIntervalMeter[waveIntervalLevel]
 
 function startTheWave() {
@@ -86,8 +86,8 @@ function startTheWave() {
     c = -1
     timer = setInterval(function() {
         for (row in seats_by_row) {
-            index = getRowIndex(row)
-            if (index >= 1 && index <= 14) {
+            index = getRowIndex(row) || 0
+            if (index >= 1 && index <= 13) {
                 c = (c + 1) % colors.length
                 color = colors[c]
                 colorLED = colorsLED[color]
@@ -98,7 +98,7 @@ function startTheWave() {
     }, waveRate);
 }
 
-var brightnessMeter = [0, 10, 20, 40, 80, 160, 255]
+var brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
 var brightnessLevel = brightnessMeter.length - 1
 var twinkleIntervalMeter = [1000 / 20, 1000 / 15, 1000 / 10, 1000 / 5, 1000 / 4, 1000 / 2.5, 1000 / 2, 1000]
 var twinkleIntervalLevel = 0
@@ -123,7 +123,7 @@ function startTwinkle(interval) {
     }, interval)
 }
 
-var probMeter = [255 * 0.1, 255 * 0.2, 255 * 0.3, 255 * 0.4, 255 * 0.5, 255 * 0.6, 255 * 0.7, 255 * 0.8, 255 * 0.9, 255 * 1.0]
+var probMeter = [10, 20, 40, 80, 160, 190, 220, 255]
 var probLevel = 0
 var prob = probMeter[probLevel]
 
@@ -136,7 +136,7 @@ function startPaparazzi(interval) {
             setSeatColor($this, '#333333')
         }
         timer = setInterval(function() {
-            command = "37 37 3 40 50 50 " + Math.round(prob).toString(16).toUpperCase() + " 2B"
+            command = "37 37 3 32 50 50 " + Math.round(prob).toString(16).toUpperCase() + " 2B"
             sendData = {
                     s: command
                 }
@@ -158,7 +158,7 @@ function flash($this, seatColor) {
     $this.css('background-color', "#FFFFFF")
     setTimeout(function() {
         $this.css('background-color', "#333333")
-    }, 100)
+    }, 250)
 }
 
 function startPropogate(interval, colorLED, colorCSS) {
@@ -268,7 +268,7 @@ $(document).on('click', '.color-btn', function(e) {
 })
 
 const BLACKOUT_COMMAND = {
-    s: "37 37 4 0 2B"
+    s: "37 37 0 2 3 3 2B"
 }
 $(document).on('click', '.blackout-btn', function(e) {
     clearInterval(timer);
@@ -284,7 +284,7 @@ $(document).on('click', '.blackout-btn', function(e) {
 });
 
 const DIM_COMMAND = {
-    s: "37 37 0 6 9 9 2B"
+    s: "37 37 0 6 A A 2B"
 }
 $(document).on('click', '.dim-btn', function(e) {
     clearInterval(timer);
@@ -301,28 +301,31 @@ $(document).on('click', '.dim-btn', function(e) {
 
 $(document).on('click', '.fade-btn', function(e) {
     clearInterval(timer);
-    brightness = 80
+    brightness = 256
     timer = setInterval(function() {
-        if (brightness >= 8) {
-            brightness -= 8
-            hex = brightness.toString(16).toUpperCase()
-            command = "37 37 0 " + hex + " " + hex + " " + hex + " 2B"
-            sendData = {
-                s: command
-            }
-            $.get('/manualserial', sendData, function(data) {
-                console.log(data)
-                for (i in seats) {
-                    $this = $('#' + i)
-                    hex = Math.max(51, brightness).toString(16)
-                    setSeatColor($this, "#" + hex + hex + hex)
+        if (brightness >= 16) {
+            brightness *= 0.90
+            if (Math.abs(brightness - 55) >= 3) {
+                hex = Math.round(brightness).toString(16).toUpperCase()
+                hexR = Math.round(brightness * 0.600).toString(16).toUpperCase()
+                command = "37 37 0 " + hexR + " " + hex + " " + hex + " 2B"
+                sendData = {
+                    s: command
                 }
-            })
+                $.get('/manualserial', sendData, function(data) {
+                    console.log(data)
+                    for (i in seats) {
+                        $this = $('#' + i)
+                        hex = Math.max(51, brightness).toString(16)
+                        setSeatColor($this, "#" + hex + hex + hex)
+                    }
+                })
+            }
         } else {
             clearInterval(timer)
-            $('.blackout-btn').click()
+            $('.dim-btn').click()
         }
-    }, 250);
+    }, 150);
 });
 
 $(document).on('keydown', '.prompt', function(e) {
@@ -411,7 +414,7 @@ function startLights($this) {
             break;
         case 'paparazzi':
             $("#prob").html(prob)
-            startPaparazzi(400)
+            startPaparazzi(250)
         case 'allon':
             color = $this.data("color")
             colorLED = colorsLED[color]
@@ -434,7 +437,7 @@ function startLights($this) {
             color = $this.data("color")
             colorLED = colorsLED[color]
             colorCSS = colorsCSS[color]
-            startPropogate(250, colorLED, colorCSS);
+            startPropogate(200, colorLED, colorCSS);
             break;
         case 'slots':
             color = $this.css('background-color');

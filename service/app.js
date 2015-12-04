@@ -75,7 +75,8 @@ s = '';
 serialPort.list(function(err, ports) {
     ports.forEach(function(port) {
         port = port.comName;
-        if (port.indexOf('usbserial') > -1) {
+        if (port.length > 0) {
+            console.log(port)
             startSerialPort(port);
             return;
         }

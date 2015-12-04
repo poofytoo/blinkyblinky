@@ -60,15 +60,16 @@ for (i in raw_seats) {
   } 
   seats_by_row[row_id].push({id: i, x: raw_seats[i].x/1.5, y: raw_seats[i].y/1.5})
 }
-// id = "E" => 1, id = "F" => 2, ...
+idToInd = {"E": 1, "F": 2, "G": 3, "H": 4, "J": 5, "K": 6, "L": 7, "M": 8, "N": 9, "O": 10, "P": 11, "R": 12, "S": 13}
 function getRowIndex(id) {
-    if (id == "R" || id == "S") {
-        return id.charCodeAt(0) - 69
-    }
-    return id.charCodeAt(0) - 68
+    return idToInd[id]
 }
 // index = 1 => "E", 2 => "F", ...
 function getRowId(index) {
-    return String.fromCharCode(parseInt(index) + ((index >= 13) ? 69 : 68))
+    for (i in idToInd) {
+        if (index == idToInd[i]) {
+            return i
+        }
+    }
 }
 
