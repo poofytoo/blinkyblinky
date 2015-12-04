@@ -1,10 +1,4 @@
 const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "silver"]
-const BLACKOUT_COMMAND = {
-    s: "37 37 0 2 3 3 2B"
-}
-const DIM_COMMAND = {
-    s: "37 37 0 6 A A 2B"
-}
 
 var root = new Firebase("https://blinkyblinky.firebaseio.com")
 var colorsLED = {};
