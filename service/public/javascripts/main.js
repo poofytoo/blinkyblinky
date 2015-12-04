@@ -15,6 +15,11 @@ var baconRingDistance = 120;
 var allowBeaconStart = false;
 var timer;
 
+function componentToHex(c) {
+    var hex = parseInt(c).toString(16).toUpperCase();
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
 function setSeatColor($this, seatColor) {
   $this.css('background-color', seatColor)
   // Use this to transmit colors to the board until websockets
@@ -38,7 +43,6 @@ function setRowColor(row, color) {
   }
   command = "37 37 1 " + color.substring(1,3) + " " + color.substring(3,5) + " " + color.substring(5,7) + " " + getRowIndex(row) + " 2B"
     sendData = {s:command}
-    // console.log(command)
     $.get('/manualserial', sendData, function(data) {
       //$r.prepend('<span class="userInput">> ' + command + '</span><br />');
       //$r.prepend(data + '<br />');
@@ -104,10 +108,9 @@ var twinkleIntervalMeter = [1000/20, 1000/15, 1000/10, 1000/5, 1000/4, 1000/2.5,
 var twinkleIntervalLevel = 0
 var twinkleBrightness = brightnessMeter[brightnessLevel]
 var twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
-var twinkleTimer;
 function startTwinkle(interval) {
   $("#twinkle-rate").html(Math.round(10000/twinkleInterval)/10 + " Hz")
-  twinkleTimer = setInterval(function() {
+  timer = setInterval(function() {
     command = "37 37 4 " + twinkleBrightness.toString(16) + " 2B"
     sendData = {s:command}
     // console.log(command)
@@ -122,12 +125,36 @@ function startTwinkle(interval) {
   }, interval)
 }
 
+var probMeter = [255*0.1, 255*0.2, 255*0.3, 255*0.4, 255*0.5, 255*0.6, 255*0.7, 255*0.8, 255*0.9, 255*1.0]
+var probLevel = 0
+var prob = probMeter[probLevel]
+function startPaparazzi(interval) {
+  $('.blackout-btn').click()
+  timer = setInterval(function(){
+    command = "37 37 3 FF FF FF " + Math.round(prob).toString(16).toUpperCase() + " 2B"
+    sendData = {s:command}
+    // console.log(command)
+    $.get('/manualserial', sendData, function(data) {
+      console.log(data)
+    })
+    for (i in seats) {
+      $this = $('#' + i)
+      if (Math.random() < prob / 255) {
+        flash($this, "#FFFFFF")
+      }
+    }
+  }, interval)
+}
+
+function flash($this, seatColor) {
+  $this.css('background-color', "#FFFFFF")
+  setTimeout(function() {
+    $this.css('background-color', "#333333")
+  }, 100)
+}
+
 function startPropogate(interval, color) {
   rgbColor = color.replace('rgb(', '').replace(' ','').replace('+','').replace(')','').split(',')
-  function componentToHex(c) {
-    var hex = parseInt(c).toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-  }
   hexColor = '#' + componentToHex(rgbColor[0]) + componentToHex(rgbColor[1])+ componentToHex(rgbColor[2])
   var row_ind = 0
   timer = setInterval(function(){
@@ -195,7 +222,6 @@ function init () {
    // startTheSlots(2000, 4000, 'red'); // 3 seconds
 }
 
-
 $(document).on('click', '.map', function(e) {
   if (allowBeaconStart) {
     x = e.pageX - 250;
@@ -239,11 +265,53 @@ $(document).on('click', '.color-btn', function(e) {
 
 $(document).on('click', '.blackout-btn', function(e) {
   clearInterval(timer);
+  command = "37 37 0 0 0 0 2B"
+  sendData = {s:command}
+  $.get('/manualserial', sendData, function(data) {
+        console.log(data)
+  })
   for (i in seats) {
     $this = $('#' + i)
     setSeatColor($this, '#333333')
   } 
 })
+
+$(document).on('click', '.dim-btn', function(e) {
+  clearInterval(timer);
+  command = "37 37 0 A A A 2B"
+  sendData = {s:command}
+  $.get('/manualserial', sendData, function(data) {
+        console.log(data)
+  })
+  for (i in seats) {
+    $this = $('#' + i)
+    setSeatColor($this, '#666666')
+  } 
+})
+
+$(document).on('click', '.fade-btn', function(e) {
+  clearInterval(timer);
+  brightness = 256
+  timer = setInterval(function(){
+    if (brightness >= 4) {
+      brightness -= 4
+      hex = brightness.toString(16).toUpperCase()
+      command = "37 37 0 " + hex + " " + hex + " " + hex +  " 2B"
+      sendData = {s:command}
+      $.get('/manualserial', sendData, function(data) {
+          console.log(data)
+      })
+      for (i in seats) {
+        $this = $('#' + i)
+        hex = Math.max(51, brightness).toString(16)
+        setSeatColor($this, "#"+hex+hex+hex)
+      } 
+   } else {
+    clearInterval(timer)
+    $('.blackout-btn').click()
+   } 
+  }, 50)
+});
 
 $(document).on('keydown', '.prompt', function(e) {
   $r = $('.response')
@@ -281,14 +349,26 @@ $(document).on('keydown', function(e){
       // "D" - faster twinkle rate
       twinkleIntervalLevel = Math.max(twinkleIntervalLevel - 1, 0)
       twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
-      clearInterval(twinkleTimer)
+      clearInterval(timer)
       startTwinkle(twinkleInterval)
     } else if (e.which == 65) {
       // "A" - slower twinkle rate
       twinkleIntervalLevel = Math.min(twinkleIntervalLevel + 1, twinkleIntervalMeter.length - 1)
       twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel]
-      clearInterval(twinkleTimer)
+      clearInterval(timer)
       startTwinkle(twinkleInterval)
+    }
+  } else if (active == "paparazzi") {
+    if (e.which == 87) {
+      // "W" - increase probability
+      probLevel = Math.min(probLevel + 1, probMeter.length - 1)
+      prob = probMeter[probLevel]
+      $("#prob").html(prob)
+    } else if (e.which == 83) {
+      // "S" - decrease probability
+      probLevel = Math.max(0, probLevel - 1)
+      prob = probMeter[probLevel]
+      $("#prob").html(prob)
     }
   }
 })
@@ -298,7 +378,6 @@ function startLights($this) {
   clearInterval(timer);
   switch(f) {
     case 'wave':
-      clearInterval(twinkleTimer);
       startTheWave();
       break;
     case 'twinkle':
@@ -306,23 +385,32 @@ function startLights($this) {
       $("#twinkle-rate").html(Math.round(10000/twinkleInterval)/10 + " Hz")
       startTwinkle(twinkleInterval);
       break;
+    case 'paparazzi':
+      $("#prob").html(prob)
+      startPaparazzi(100)
     case 'allon':
-      clearInterval(twinkleTimer);
       color = $this.css('background-color');
+      rgbColor = color.replace('rgb(', '').replace(' ','').replace('+','').replace(')','').split(',')
+      hexColor = '#' + componentToHex(rgbColor[0]) + componentToHex(rgbColor[1])+ componentToHex(rgbColor[2])
+      command = "37 37 0 " + hexColor.substring(1,3) + " " + hexColor.substring(3,5) + " " + hexColor.substring(5,7) + " 2B"
+      sendData = {s:command}
+      $.get('/manualserial', sendData, function(data) {
+        console.log(data)
+      })
       for (i in seats) {
         $this = $('#' + i)
-        setSeatColor($this, color)
+        setSeatColor($this, hexColor)
       } 
       break;
     case 'beacon':
       break;
     case 'propogate':
-      clearInterval(twinkleTimer);
+      clearInterval(timer);
       color = $this.css('background-color');
-      startPropogate(150, color);
+      startPropogate(100, color);
       break;
     case 'slots':
-      clearInterval(twinkleTimer);
+      clearInterval(timer);
       color = $this.css('background-color');
       startTheSlots(2000, 4000, color);
       break;
