@@ -11,11 +11,11 @@ var users = require('./routes/users');
 var app = express();
 
 function hex2a(hexx) {
-  var hex = hexx.toString();//force conversion
-  var str = '';
-  for (var i = 0; i < hex.length; i += 2)
-    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-  return str;
+    var hex = hexx.toString(); //force conversion
+    var str = '';
+    for (var i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
 }
 
 // view engine setup
@@ -26,7 +26,9 @@ app.set('view engine', 'hbs');
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -36,9 +38,9 @@ app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handlers
@@ -65,54 +67,52 @@ app.use(function(err, req, res, next) {
     });
 });
 /*
-*/
+ */
 var serialPort = require("serialport");
 var SerialPort = serialPort.SerialPort;
 s = '';
 
-serialPort.list(function (err, ports) {
-  ports.forEach(function(port) {
-    port = port.comName;
-    if (port.indexOf('usbserial') > -1) {
-        startSerialPort(port);
-        return;
-    }
-  });
+serialPort.list(function(err, ports) {
+    ports.forEach(function(port) {
+        port = port.comName;
+        if (port.indexOf('usbserial') > -1) {
+            startSerialPort(port);
+            return;
+        }
+    });
 });
 
 function startSerialPort(port) {
-  s = new SerialPort(port, {
-    baudrate: 1200
-  });
-  s.on("open", function () {
-    console.log('open');
-    /*
-    serialPort.on('data', function(data) {
-      console.log('data received: ' + data);
+    s = new SerialPort(port, {
+        baudrate: 1200
     });
-  */
-    data = hex2a('00')
-    s.write(data, function(err, results) {
-        console.log(results);
-    });
-/*
-    setTimeout(function() {
-      data = hex2a('40')
-      s.write(data, function(err, results) {
-      });
-    }, 100)
+    s.on("open", function() {
+        console.log('open');
+        /*
+          serialPort.on('data', function(data) {
+            console.log('data received: ' + data);
+          });
+        */
+        data = [55, 55, 4, 0, 43]
+        s.write(data, function(err, results) {
+            console.log(results);
+        });
+        /*
+            setTimeout(function() {
+              data = hex2a('40')
+              s.write(data, function(err, results) {
+              });
+            }, 100)
 
-      setTimeout(function() {
-      data = hex2a('70')
-      s.write(data, function(err, results) {
-      });
-    }, 1000);
-*/
+            setTimeout(function() {
+              data = hex2a('70')
+              s.write(data, function(err, results) {
+              });
+            }, 1000);
+        */
 
-/*
-
-TESTING RGB
-*/
+      // TESTING RGB
+        /*
       setInterval(function() {
         data = hex2a("C0")
         console.log(data);
@@ -145,10 +145,10 @@ TESTING RGB
       }, 900)
 
       }, 600)
+*/
 
 
-
-  });
+    });
 
 }
 
