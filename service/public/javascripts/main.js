@@ -1,7 +1,7 @@
 const PROPOGATE_RATE = 350
 
 const PAPARAZZI_RATE = 450
-const PAPARAZZI_LED = [64, 100, 100]
+const PAPARAZZI_LED = ["64", "A0", "A0"] // HEX
 
 const RAINBOW_RATE = 750
 
@@ -371,14 +371,14 @@ function AllOn(colorLED, colorCSS) {
 }
 
 $(document).on('click', '.blackout-btn', function(e) {
-    Blackout()
     clearInterval(timer);
+    Blackout()
     timer = setInterval(Blackout, 750)
 });
 
 $(document).on('click', '.dim-btn', function(e) {
-    Dim()
     clearInterval(timer)
+    Dim()
     timer = setInterval(Dim, 750)
 })
 
