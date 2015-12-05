@@ -12,7 +12,7 @@ const RED_ATTENUATION_FACTOR = 0.6
 const waveIntervalMeter = [1000 / 10, 1000 / 8, 1000 / 6, 1000 / 5, 1000 / 4, 1000 / 3, 1000 / 2, 1000 / 1]
 const twinkleIntervalMeter = [1000 / 7.5, 1000 / 5.0, 1000 / 4.0, 1000 / 3.0, 1000 / 2.0, 1000 / 1.5, 1000 / 1.0]
 const brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
-const probMeter = [25, 50, 75, 100, 125, 150, 175, 200, 225, 250]
+const probMeter = [20, 30, 45, 60, 80, 100, 125, 150, 180, 215, 255]
 
 
 const BLACKOUT_COMMAND = {
@@ -230,6 +230,7 @@ function flash($this, seatColor) {
 
 function startPropogate(interval, colorLED, colorCSS) {
     clearInterval(timer)
+    var row_i = 0
     nextRow = function(pause, row_i) {
         if (row_i < rows.length) {
             row_i += 1
@@ -316,7 +317,7 @@ $(document).on('click', '.command', function(e) {
     $('.option2').hide();
     $('.' + f + '-options').show();
     $("#waverate").html(Math.round(10000 / waveRate) / 10 + " Hz")
-    $("#prob").html(prob + " / 255")
+    $(".prob").html(prob + " / 255")
     $("#twinkle-brightness").html(twinkleBrightness + " / 255")
     $("#twinkle-rate").html(Math.round(10000 / twinkleInterval) / 10 + " Hz")
     allowBeaconStart = false;
@@ -464,7 +465,7 @@ $(document).on('keydown', function(e) {
             clearInterval(timer)
             startTwinkle(twinkleInterval)
         }
-    } else if (active == "paparazzi") {
+    } else if (active == "paparazzi" || active == "flicker") {
         if (e.which == 87) {
             // "W" - increase probability
             probLevel = Math.min(probLevel + 1, probMeter.length - 1)
@@ -473,7 +474,7 @@ $(document).on('keydown', function(e) {
             probLevel = Math.max(0, probLevel - 1)
         }
         prob = probMeter[probLevel]
-        $("#prob").html(prob)
+        $(".prob").html(prob)
     } else if (active == "wave") {
         if (e.which == 87) {
             // "W" - increase rate
@@ -493,10 +494,12 @@ function startLights($this) {
     clearInterval(timer);
     switch (f) {
         case 'wave':
+            Blackout();
             $("#waverate").html(Math.round(10000 / waveRate) / 10 + " Hz")
             startTheWave();
             break;
         case 'rainbow':
+            Blackout();
             startTheRainbow();
             break;
         case 'twinkle':
@@ -505,7 +508,8 @@ function startLights($this) {
             startTwinkle(twinkleInterval);
             break;
         case 'paparazzi':
-            $("#prob").html(prob);
+            Blackout();
+            $(".prob").html(prob);
             startPaparazzi(PAPARAZZI_RATE);
         case 'flicker':
             color = $this.data("color")
