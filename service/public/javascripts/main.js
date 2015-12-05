@@ -1,12 +1,12 @@
-const PROPOGATE_RATE = 350
+const PROPOGATE_RATE = 300
 
-const PAPARAZZI_RATE = 450
+const PAPARAZZI_RATE = 400
 const PAPARAZZI_LED = ["64", "A0", "A0"] // HEX
 
-const RAINBOW_RATE = 500
+const RAINBOW_RATE = 900
 
-const FADE_RATE = 200
-const FADE_FACTOR = 0.825
+const FADE_RATE = 150
+const FADE_FACTOR = 0.83
 const RED_ATTENUATION_FACTOR = 0.6
 
 const waveIntervalMeter = [1000 / 10, 1000 / 8, 1000 / 6, 1000 / 5, 1000 / 4, 1000 / 3, 1000 / 2, 1000 / 1]
@@ -19,12 +19,12 @@ const BLACKOUT_COMMAND = {
     s: "37 37 0 1 3 3 2B"
 }
 const DIM_COMMAND = {
-    s: "37 37 0 6 A A 2B"
+    s: "37 37 0 4 6 6 2B"
 }
 
 var state = '';
 
-var audWidth = 0;
+var audWidth = 0
 var audHeight = 0;
 var setDateStart = new Date().getTime();
 var animationRefreshRate = 150;
@@ -178,13 +178,13 @@ function startPaparazzi(interval) {
             setSeatColor($this, '#333333')
         }
         timer = setInterval(function() {
-            command = "37 37 2 " + PAPARAZZI_LED.join(" ") + prob.toString(16).toUpperCase() + " 2B"
+            command = "37 37 2 " + PAPARAZZI_LED.join(" ") + " " + prob.toString(16).toUpperCase() + " 2B"
             sendData = {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
                 //console.log(data)
-                setTimeout(Blackout, interval / 2)
+                setTimeout(Blackout, PAPARAZZI_RATE / 2)
                 for (i in seats) {
                     $this = $('#' + i)
                     if (Math.random() < prob / 255) {
@@ -192,7 +192,7 @@ function startPaparazzi(interval) {
                     }
                 }
             })
-        }, interval)
+        }, PAPARAZZI_RATE)
     })
 }
 
@@ -204,12 +204,12 @@ function startFlicker(interval, colorLED, colorCSS) {
             setSeatColor($this, '#333333')
         }
         timer = setInterval(function() {
-            command = "37 37 2 " + colorLED.join(" ") + prob.toString(16).toUpperCase() + " 2B"
+            command = "37 37 2 " + colorLED.join(" ") + " " + prob.toString(16).toUpperCase() + " 2B"
             sendData = {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
-                setTimeout(Blackout, interval / 2)
+                setTimeout(function(){Blackout()}, PAPARAZZI_RATE / 2)
                 for (i in seats) {
                     $this = $('#' + i)
                     if (Math.random() < prob / 255) {
@@ -217,7 +217,7 @@ function startFlicker(interval, colorLED, colorCSS) {
                     }
                 }
             })
-        }, interval)
+        }, PAPARAZZI_RATE)
     })
 }
 

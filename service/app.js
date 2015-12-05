@@ -72,20 +72,22 @@ var serialPort = require("serialport");
 var SerialPort = serialPort.SerialPort;
 s = '';
 
+var isWin = /^win/.test(process.platform)
+
 serialPort.list(function(err, ports) {
     ports.forEach(function(port) {
         port = port.comName;
-        if (port.indexOf("usb") > -1) {
+        if (isWin && port.length > 0 || port.indexOf("usbserial") > -1) {
             console.log(port)
             startSerialPort(port);
-            return;
+            return
         }
     });
 });
 
 function startSerialPort(port) {
     s = new SerialPort(port, {
-        baudrate: 9600
+        baudrate: 1200
     });
     s.on("open", function() {
         console.log('open');
@@ -112,7 +114,7 @@ function startSerialPort(port) {
             }, 1000);
         */
 
-      // TESTING RGB
+        // TESTING RGB
         /*
       setInterval(function() {
         data = hex2a("C0")
