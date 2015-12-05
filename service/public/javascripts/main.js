@@ -511,6 +511,7 @@ function startLights($this) {
             Blackout();
             $(".prob").html(prob);
             startPaparazzi(PAPARAZZI_RATE);
+            break;
         case 'flicker':
             color = $this.data("color")
             colorLED = colorsLED[color]
