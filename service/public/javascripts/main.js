@@ -14,14 +14,6 @@ const twinkleIntervalMeter = [1000 / 7.5, 1000 / 5.0, 1000 / 4.0, 1000 / 3.0, 10
 const brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
 const probMeter = [20, 30, 45, 60, 80, 100, 125, 150, 180, 215, 255]
 
-
-const BLACKOUT_COMMAND = {
-    s: "37 37 0 1 3 3 2B"
-}
-const DIM_COMMAND = {
-    s: "37 37 0 4 6 6 2B"
-}
-
 var state = '';
 
 var audWidth = 0
@@ -385,7 +377,7 @@ $(document).on('click', '.dim-btn', function(e) {
 
 $(document).on('click', '.fade-btn', function(e) {
     clearInterval(timer);
-    brightness = 256
+    brightness = 280
     timer = setInterval(function() {
         if (brightness >= 16) {
             brightness = Math.round(brightness * FADE_FACTOR)
@@ -412,7 +404,7 @@ $(document).on('click', '.fade-btn', function(e) {
             })
         } else {
             clearInterval(timer)
-            Dim();
+            $(".blackout-btn").click();
         }
     }, FADE_RATE);
 });
@@ -513,7 +505,7 @@ function startLights($this) {
             break;
         case 'flicker':
             color = $this.data("color")
-            colorLED = colorsLED[color]
+            colorLED = colorsFlicker[color]
             colorCSS = colorsCSS[color]
             startFlicker(PAPARAZZI_RATE, colorLED, colorCSS)
             break;

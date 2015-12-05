@@ -2,7 +2,7 @@
 RED
 ========================================================================== */
 .redA {
-  background-color: #ff1744;
+  background-color: #d61b29;
 }
 
 .redB, .redA:hover {
@@ -14,7 +14,7 @@ RED
 GRN
 ========================================================================== */
 .grnA {
-  background-color: #4caf50;
+  background-color: #2bb20a;
 }
 .grnB, .grnA:hover {
   background-color: #388e3c;
@@ -25,7 +25,7 @@ GRN
 BLU
 ========================================================================== */
 .bluA {
-  background-color: #03a9f4;
+  background-color: #1f5cd4;
 }
 
 .bluB, .bluA:hover {
@@ -36,7 +36,7 @@ BLU
 YLW
 ========================================================================== */
 .ylwA {
-  background-color: #ffeb3b;
+  background-color: #f6c900;
 }
 
 .ylwB, .ylwA:hover {
@@ -47,7 +47,7 @@ YLW
 PNK
 ========================================================================== */
 .pnkA {
-  background-color: #ff4081;
+  background-color: #fc40be;
 }
 .pnkB, .pnkA:hover {
   background-color: #e91e63;
@@ -57,7 +57,7 @@ PNK
 ORG
 ========================================================================== */
 .orgA {
-  background-color: #ff9800;
+  background-color: #f8660a;
 }
 .orgB, .orgA:hover {
   background-color: #ff5722;
@@ -67,7 +67,7 @@ ORG
 PUR
 ========================================================================== */
 .purA {
-  background-color: #d500f9;
+  background-color: #9100ff;
 }
 .purB, .purA:hover {
   background-color: #9c27b0;

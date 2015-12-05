@@ -96,59 +96,34 @@ function startSerialPort(port) {
             console.log('data received: ' + data);
           });
         */
-        data = [55, 55, 0, 2, 3, 3, 43]
-        s.write(data, function(err, results) {
-            console.log(results);
-        });
-        /*
-            setTimeout(function() {
-              data = hex2a('40')
-              s.write(data, function(err, results) {
-              });
-            }, 100)
+        /* ALL TEAM COLORS TEST */
+        if (process.argv.indexOf("test") > -1) {
+            var colors = ["red", "orange", "yellow", "green", "blue", "silver", "pink", "purple"]
+            var colorsLED = {
+                "blue": [0, 16, 80],
+                "green": [5, 80, 5],
+                "orange": [64, 40, 0],
+                "pink": [80, 32, 64],
+                "purple": [22, 0, 66],
+                "red": [80, 4, 4],
+                "silver": [36, 72, 72],
+                "yellow": [50, 72, 0]
+            }
+            c = -1
+            setInterval(function() {
+                c = (c + 1) % colors.length;
+                data = [55, 55, 0, colorsLED[colors[c]][0], colorsLED[colors[c]][1], colorsLED[colors[c]][2], colorsLED[colors[c]][0], 43]
+                s.write(data, function(err, results){
 
-            setTimeout(function() {
-              data = hex2a('70')
-              s.write(data, function(err, results) {
-              });
-            }, 1000);
-        */
-
-        // TESTING RGB
-        /*
-      setInterval(function() {
-        data = hex2a("C0")
-        console.log(data);
-        s.write([55, 55, 0, 50, 0, 0, 43], function(err, results) {
-          console.log(results + 't');
-        });
-      }, 900)
-
-      setTimeout(function() {
-
-      setInterval(function() {
-        data = hex2a("C0")
-        console.log(data);
-        s.write([55, 55, 0, 0, 50, 0, 43], function(err, results) {
-          console.log(results);
-        });
-      }, 900)
-
-      }, 300)
-
-
-      setTimeout(function() {
-
-      setInterval(function() {
-        data = hex2a("C0")
-        console.log(data);
-        s.write([55, 55, 0, 0, 0, 50, 43], function(err, results) {
-          console.log(results);
-        });
-      }, 900)
-
-      }, 600)
-*/
+                })
+            }, 500);
+        } else {
+            /* BLACKOUT */
+            data = [55, 55, 0, 2, 10, 10, 43]
+            s.write(data, function(err, results) {
+                console.log("All lights blackout.");
+            });
+        }
     });
 
 }

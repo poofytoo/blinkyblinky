@@ -17,12 +17,14 @@ h1 {
     margin: 10px;
     font-weight: 400;
     letter-spacing: 2px;
+    text-align: center;
 }
 
 h2 {
     margin: 20px 10px 10px;
     font-weight: 400;
     letter-spacing: 2px;
+    text-align: center;
 }
 
 .blackout {
@@ -59,7 +61,7 @@ button {
     font-weight: 300;
 }
 
-.color-input {
+.color-input, .control-blackout {
     width: 100% !important;
     border: 0;
     color: black;
@@ -71,14 +73,18 @@ button {
     font-weight: 300;
     text-align: center;
 }
-.color-input>input {
-  width: 25% !important;
-  padding: 2px;
-  margin: 2px;
-  text-align: center;
-  font-family: "Lato", "Lucida Grande", sans-serif;
-  font-size: 16px;
-  outline: gray;
+
+.color-input>input,
+.control-blackout>input {
+    width: 25% !important;
+    padding: 2px;
+    margin: 2px;
+    text-align: center;
+    font-family: "Lato", "Lucida Grande", sans-serif;
+    font-size: 16px;
+    outline: gray;
+    font-weight: 300;
+    text-align: center;
 }
 
 .color-btn,
