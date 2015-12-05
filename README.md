@@ -2,6 +2,12 @@
 one fish, two fish, blink, blink, blink.
 
 ----
+## Programming Test
+
+running `npm start test` will set all wristbands to cycle through all 8 team colors
+
+
+----
 ## All On
 
 Turns all lights in Kresge the same color.
