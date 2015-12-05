@@ -102,6 +102,10 @@ button {
     display: none;
 }
 
+h2 {
+    margin-top: 5px;
+}
+
 .wave-options {}
 
 .beacon-options {}
@@ -134,10 +138,10 @@ button.active:hover {
 .run-btn {
     margin: 0 auto;
     font-weight: 600;
-    padding: 30px 0;
+    padding: 20px 0;
     background-color: #F01111;
     color: #eee;
-    font-size: 30px;
+    font-size: 24px;
 }
 
 .run-btn:hover {
@@ -186,8 +190,9 @@ button.active:hover {
 
 .seat {
     position: absolute;
-    width: 2px;
-    height: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
     background-color: #333;
 }
 

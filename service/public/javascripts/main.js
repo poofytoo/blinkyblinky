@@ -1,12 +1,20 @@
 const PROPOGATE_RATE = 350
+
 const PAPARAZZI_RATE = 450
+const PAPARAZZI_LED = [64, 100, 100]
+
 const RAINBOW_RATE = 750
+
 const FADE_RATE = 200
 const FADE_FACTOR = 0.825
 const RED_ATTENUATION_FACTOR = 0.6
-const waveIntervalMeter =    [1000 / 7.5, 1000 / 6, 1000 / 5, 1000 / 4, 1000 / 3, 1000 / 2, 1000]
-const twinkleIntervalMeter = [1000 / 5.0, 1000 / 4, 1000 / 3, 1000 / 2, 1000 / 1.5, 1000 / 1.0]
+
+const waveIntervalMeter = [1000 / 10, 1000 / 8, 1000 / 6, 1000 / 5, 1000 / 4, 1000 / 3, 1000 / 2, 1000 / 1]
+const twinkleIntervalMeter = [1000 / 7.5, 1000 / 5.0, 1000 / 4.0, 1000 / 3.0, 1000 / 2.0, 1000 / 1.5, 1000 / 1.0]
+const brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
 const probMeter = [25, 50, 75, 100, 125, 150, 175, 200, 225, 250]
+
+
 const BLACKOUT_COMMAND = {
     s: "37 37 0 1 3 3 2B"
 }
@@ -51,7 +59,7 @@ function setRowColor(row_ind, colorLED, colorCSS) {
         s: command
     }
     $.get('/manualserial', sendData, function(data) {
-        console.log(data)
+        //console.log(data)
         rowId = getRowId(row_ind)
         for (i in seats_by_row[rowId]) {
             index = parseInt(i) + 1
@@ -84,7 +92,7 @@ $(document).on('keydown', 'body', function(e) {
             b: results[2].replace(' ', '')
         }
         $.get('/setsingle', data, function(output) {
-            console.log(output)
+            //console.log(output)
         })
     }
 }, updateRate);*/
@@ -103,7 +111,7 @@ function startTheWave() {
             up = false
         }
         if (r == 0) {
-            // Blackout()
+            Blackout()
             c = Math.floor(Math.random() * colors.length)
             up = true
         }
@@ -136,7 +144,6 @@ function startTheRainbow() {
     }, RAINBOW_RATE);
 }
 
-var brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
 var brightnessLevel = brightnessMeter.length - 1
 var twinkleIntervalLevel = 0
 var twinkleBrightness = brightnessMeter[brightnessLevel]
@@ -150,7 +157,7 @@ function startTwinkle(interval) {
             s: command
         }
         $.get('/manualserial', sendData, function(data) {
-            console.log(data)
+            //console.log(data)
             for (i in seats) {
                 $this = $('#' + i)
                 seatColor = getRandomColor();
@@ -166,19 +173,18 @@ var prob = probMeter[probLevel]
 function startPaparazzi(interval) {
     clearInterval(timer);
     $.get('/manualserial', BLACKOUT_COMMAND, function(data) {
-        console.log(data)
         for (i in seats) {
             $this = $('#' + i)
             setSeatColor($this, '#333333')
         }
         timer = setInterval(function() {
-            command = "37 37 2 32 50 50 " + prob.toString(16).toUpperCase() + " 2B"
+            command = "37 37 2 " + PAPARAZZI_LED.join(" ") + prob.toString(16).toUpperCase() + " 2B"
             sendData = {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
-                console.log(data)
-                setTimeout(Blackout, PAPARAZZI_RATE/2)
+                //console.log(data)
+                setTimeout(Blackout, interval / 2)
                 for (i in seats) {
                     $this = $('#' + i)
                     if (Math.random() < prob / 255) {
@@ -190,8 +196,33 @@ function startPaparazzi(interval) {
     })
 }
 
+function startFlicker(interval, colorLED, colorCSS) {
+    clearInterval(timer)
+    $.get('/manualserial', BLACKOUT_COMMAND, function(data) {
+        for (i in seats) {
+            $this = $('#' + i)
+            setSeatColor($this, '#333333')
+        }
+        timer = setInterval(function() {
+            command = "37 37 2 " + colorLED.join(" ") + prob.toString(16).toUpperCase() + " 2B"
+            sendData = {
+                s: command
+            }
+            $.get('/manualserial', sendData, function(data) {
+                setTimeout(Blackout, interval / 2)
+                for (i in seats) {
+                    $this = $('#' + i)
+                    if (Math.random() < prob / 255) {
+                        flash($this, colorCSS)
+                    }
+                }
+            })
+        }, interval)
+    })
+}
+
 function flash($this, seatColor) {
-    $this.css('background-color', "#FFFFFF")
+    $this.css('background-color', seatColor)
     setTimeout(function() {
         $this.css('background-color', "#333333")
     }, 250)
@@ -203,12 +234,13 @@ function startPropogate(interval, colorLED, colorCSS) {
         if (row_i < rows.length) {
             row_i += 1
             setRowColor(row_i, colorLED, colorCSS)
-            timer = setTimeout(function(){
+            timer = setTimeout(function() {
                 nextRow(pause * 0.9, row_i)
             }, pause)
         } else {
             clearInterval(timer)
             AllOn(colorLED, colorCSS)
+            return;
         }
     }
     nextRow(interval, 0);
@@ -313,22 +345,17 @@ $(document).on('click', '.color-btn', function(e) {
 
 function Blackout() {
     $.get('/manualserial', BLACKOUT_COMMAND, function(data) {
-        console.log(data)
-        for (i in seats) {
-            $this = $('#' + i)
-            setSeatColor($this, '#333333')
-        }
+        //console.log(data)
+        $(".seat").css("background-color", "#333333")
         return;
     })
 }
 
 function Dim() {
     $.get('/manualserial', DIM_COMMAND, function(data) {
-        console.log(data)
-        for (i in seats) {
-            $this = $('#' + i)
-            setSeatColor($this, '#666666')
-        }
+        //console.log(data)
+        $(".seat").css("background-color", "#666666")
+        return;
     })
 }
 
@@ -338,11 +365,8 @@ function AllOn(colorLED, colorCSS) {
         s: command
     }
     $.get('/manualserial', sendData, function(data) {
-        console.log(data)
-        for (i in seats) {
-            $this = $('#' + i)
-            setSeatColor($this, colorCSS)
-        }
+        //console.log(data)
+        $(".seat").css("background-color", colorCSS)
     })
 }
 
@@ -379,7 +403,7 @@ $(document).on('click', '.fade-btn', function(e) {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
-                console.log(data)
+                //console.log(data)
                 for (i in seats) {
                     $this = $('#' + i)
                     hex = Math.max(51, brightness).toString(16)
@@ -483,6 +507,12 @@ function startLights($this) {
         case 'paparazzi':
             $("#prob").html(prob);
             startPaparazzi(PAPARAZZI_RATE);
+        case 'flicker':
+            color = $this.data("color")
+            colorLED = colorsLED[color]
+            colorCSS = colorsCSS[color]
+            startFlicker(PAPARAZZI_RATE, colorLED, colorCSS)
+            break;
         case 'allon':
             color = $this.data("color")
             colorLED = colorsLED[color]
@@ -492,11 +522,8 @@ function startLights($this) {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
-                console.log(data)
-                for (i in seats) {
-                    $this = $('#' + i)
-                    setSeatColor($this, colorCSS)
-                }
+                //console.log(data)
+                $(".seat").css("background-color", colorCSS)
             })
             break;
         case 'beacon':
@@ -516,7 +543,7 @@ function startLights($this) {
 $(function() {
     var $mapContainer = $('.map');
     for (i in seats) {
-        var $newSeat = $('<div id="' + i + '" data-x="' + seats[i].x + '" data-y="' + seats[i].y + '" class="seat"></div>');
+        var $newSeat = $('<div class="seat" id="' + i + '" data-x="' + seats[i].x + '" data-y="' + seats[i].y + '" class="seat"></div>');
         seatLeft = seats[i].x;
         seatTop = seats[i].y;
         $newSeat.css({
