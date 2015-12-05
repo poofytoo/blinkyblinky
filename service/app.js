@@ -85,7 +85,7 @@ serialPort.list(function(err, ports) {
 
 function startSerialPort(port) {
     s = new SerialPort(port, {
-        baudrate: 1200
+        baudrate: 9600
     });
     s.on("open", function() {
         console.log('open');

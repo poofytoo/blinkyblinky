@@ -3,7 +3,7 @@ const PROPOGATE_RATE = 350
 const PAPARAZZI_RATE = 450
 const PAPARAZZI_LED = ["64", "A0", "A0"] // HEX
 
-const RAINBOW_RATE = 750
+const RAINBOW_RATE = 500
 
 const FADE_RATE = 200
 const FADE_FACTOR = 0.825
@@ -396,7 +396,6 @@ $(document).on('click', '.fade-btn', function(e) {
             if (brightnessR in escapeVals) {
                 brightnessR -= 1
             }
-
             hex = brightness.toString(16).toUpperCase()
             hexR = brightnessR.toString(16).toUpperCase()
             command = "37 37 0 " + hexR + " " + hex + " " + hex + " 2B"
