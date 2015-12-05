@@ -34,7 +34,7 @@ Control the *color-change frequency* of **wave** using [W / S] keys.
 
 **Twinkle** causes all lights in the auditorum to flicker a random color with modular brightness and frequency.
 
-![Twinkle](/samples/twinkler.gif?raw=true "Twinkle")
+![Twinkle](/samples/twinkle.gif?raw=true "Twinkle")
 
 - Control the *brightness* with [W / S] keys
 
@@ -63,7 +63,7 @@ Control the probability with [W / S] keys.
 
 **Fade Down** charges all lights in the auditorium to maximum (white) brightness, and then gradually dims them to blackout over the course of ~2 secs.
 
-![Flicker](/samples/flicker.gif?raw=true "Flicker")
+![Flicker](/samples/fade.gif?raw=true "Flicker")
 
 ---
 ## Hard-coded Constants
