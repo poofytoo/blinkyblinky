@@ -24,6 +24,8 @@ var colorsFlicker = {
 var BLACKOUT_COMMAND = {
     s: "37 37 0 3 9 9 2B"
 }
+var BLACKOUT_LED = ["3", "9", "9"]
+
 var DIM_COMMAND = {
     s: "37 37 0 3 9 9 2B"
 }
@@ -47,9 +49,9 @@ root.child("BLACKOUT").on("value", function(ss) {
     DIM_COMMAND = {
         s: "37 37 0 " + ss.val() + " 2B"
     }
-    temp = ss.val().split(" ");
-    for (channel in temp) {
-        $("input#blackout-" + channel).val(temp[channel])
+    BLACKOUT_LED = ss.val().split(" ");
+    for (channel in BLACKOUT_LED) {
+        $("input#blackout-" + channel).val(BLACKOUT_LED[channel])
     }
 });
 

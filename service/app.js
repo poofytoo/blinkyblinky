@@ -128,5 +128,4 @@ function startSerialPort(port) {
 
 }
 
-
 module.exports = app;

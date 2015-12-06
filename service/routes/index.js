@@ -31,8 +31,10 @@ router.get('/manualserial', function(req, res, next) {
         }
     }
     if (s) {
-        s.write(bytesDec, function(err, results) {
-          res.send('ok<br />hex: [' + newBytes + ']<br />dec: [' + bytesDec + ']')
+        s.write(bytesDec, function() {
+            s.drain(function() {
+                res.send('ok<br />hex: [' + newBytes + ']<br />dec: [' + bytesDec + ']')
+            })
         });
     } else {
         res.send('no serial<br />hex: [' + newBytes + ']<br />dec: [' + bytesDec + ']')
