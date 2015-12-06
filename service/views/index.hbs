@@ -2,29 +2,32 @@
   <div class="controls">
     <h1>2.009blinky <span class="ver">v0.1</span></h1>
     <div>
-      <button class="command" style="width:49%; display:inline; float:left" data-func="allon">all on</button>
-      <button class="command" style="width:49%; display:inline; float:right" data-func="propogate">propagate</button>
+      <button class="command" data-func="allon">all on</button>
     </div>
     <div>
-      <button class="command" style="width:49%; display:inline; float:left" data-func="wave">wave</button>
-      <button class="command" style="width:49%; display:inline; float:right" data-func="rainbow">rainbow</button>
+      <button class="command" style="width:49.5%; display:inline; float:left" data-func="wave">wave</button>
+      <button class="command" style="width:49.5%; display:inline; float:right" data-func="rainbow">rainbow</button>
     </div>
     <div>
-      <button class="command" data-func="twinkle">twinkle</button>
+      <button class="command" style="width:49.5%; display:inline; float:left" data-func="propagate">propagate <br> row</button>
+      <button class="command" style="width:49.5%; display:inline; float:right" data-func="propagate-random">propagate <br> random</button>
     </div>
     <div>
-      <button class="command" style="width:49%; display:inline; float:left" data-func="paparazzi">paparazzi <br> lights</button>
-      <button class="command" style="width:49%; display:inline; float:right" data-func="flicker">flicker <br> color</button>
+      <button class="command" style="width:49.5%; display:inline; float:left" data-func="twinkle">Random <br> Twinkle</button>
+      <button class="command" style="width:49.5%; display:inline; float:right" data-func="team-twinkle">Team <br> Twinkle</button>
+    </div>
+    <div>
+      <button class="command" style="width:49.5%; display:inline; float:left" data-func="paparazzi">paparazzi <br> lights</button>
+      <button class="command" style="width:49.5%; display:inline; float:right" data-func="flicker">flicker <br> color</button>
     </div>
     <!--<div>
       <button class="command" data-func="beacon">beacon</button>
     </div>-->
     <div>
-      <button class="dim dim-btn" data-func="dim">Dim</button>
+      <button class="dim dim-btn" style="width:49.5%; display:inline; float:left" data-func="dim">Dim</button>
+      <button class="fade fade-btn" style="width:49.5%; display:inline; float:right" data-func="fade">Fade Down</button>
     </div>
-    <div>
-      <button class="fade fade-btn" data-func="fade">Fade Down</button>
-    </div>
+    <br>
     <div class="option2 wave-options">
       <h2>Wave Options</h2>
       <button class="run-btn" data-func="wave">START</button>
@@ -41,6 +44,10 @@
       <button>Brightness (W &uarr; &nbsp; S &darr;)<br> <span style="color:white" id="twinkle-brightness"></span></button>
       <button>Rate (&larr; A &nbsp; D &rarr;)<br> <span style="color:white" id="twinkle-rate"></span></button>
     </div>
+    <div class="option2 team-twinkle-options">
+      <h2>Team Twinkle Options</h2>
+      <button class="run-btn" data-func="team-twinkle">START</button>
+    </div>
     <div class="option2 paparazzi-options">
       <h2>Paparazzi Options</h2>
       <button class="run-btn" data-func="paparazzi">START</button>
@@ -52,48 +59,79 @@
         click on seat location to start pulses
       </div>
     </div>
-    <div class="option2 propogate-options">
-      <h2>Propogate Options</h2>
-      <button class="color-btn grnA" data-func="propogate" data-color="green">BEGIN</button>
-      <button class="color-btn redA" data-func="propogate" data-color="red">BEGIN</button>
-      <button class="color-btn ylwA" data-func="propogate" data-color="yellow">BEGIN</button>
-      <button class="color-btn bluA" data-func="propogate" data-color="blue">BEGIN</button>
-      <button class="color-btn slvA" data-func="propogate" data-color="silver">BEGIN</button>
-      <button class="color-btn pnkA" data-func="propogate" data-color="pink">BEGIN</button>
-      <button class="color-btn purA" data-func="propogate" data-color="purple">BEGIN</button>
-      <button class="color-btn orgA" data-func="propogate" data-color="orange">BEGIN</button>
+    <div class="option2 propagate-options">
+      <h2>Propagate Options</h2>
+
+      <button class="color-btn ylwA" data-func="propagate" data-color="yellow">BEGIN</button>
+      <button class="color-btn bluA" data-func="propagate" data-color="blue">BEGIN</button>
+
+      <button class="color-btn orgA" data-func="propagate" data-color="orange">BEGIN</button>
+      <button class="color-btn redA" data-func="propagate" data-color="red">BEGIN</button>
+
+      <button class="color-btn pnkA" data-func="propagate" data-color="pink">BEGIN</button>
+      <button class="color-btn grnA" data-func="propagate" data-color="green">BEGIN</button>
+
+      <button class="color-btn purA" data-func="propagate" data-color="purple">BEGIN</button>
+      <button class="color-btn slvA" data-func="propagate" data-color="silver">BEGIN</button>
 
     </div>
+
+    <div class="option2 propagate-random-options">
+      <h2>Propagate Options</h2>
+
+      <button class="color-btn ylwA" data-func="propagate-random" data-color="yellow">BEGIN</button>
+      <button class="color-btn bluA" data-func="propagate-random" data-color="blue">BEGIN</button>
+
+      <button class="color-btn orgA" data-func="propagate-random" data-color="orange">BEGIN</button>
+      <button class="color-btn redA" data-func="propagate-random" data-color="red">BEGIN</button>
+
+      <button class="color-btn pnkA" data-func="propagate-random" data-color="pink">BEGIN</button>
+      <button class="color-btn grnA" data-func="propagate-random" data-color="green">BEGIN</button>
+
+      <button class="color-btn purA" data-func="propagate-random" data-color="purple">BEGIN</button>
+      <button class="color-btn slvA" data-func="propagate-random" data-color="silver">BEGIN</button>
+    </div>
+
     <div class="option2 allon-options">
       <h2>All On Options</h2>
-      <button class="allon-btn grnA" data-func="allon" data-color="green">SET</button>
-      <button class="allon-btn redA" data-func="allon" data-color="red">SET</button>
+
       <button class="allon-btn ylwA" data-func="allon" data-color="yellow">SET</button>
       <button class="allon-btn bluA" data-func="allon" data-color="blue">SET</button>
-      <button class="allon-btn slvA" data-func="allon" data-color="silver">SET</button>
-      <button class="allon-btn pnkA" data-func="allon" data-color="pink">SET</button>
-      <button class="allon-btn purA" data-func="allon" data-color="purple">SET</button>
-      <button class="allon-btn orgA" data-func="allon" data-color="orange">SET</button>
 
+      <button class="allon-btn orgA" data-func="allon" data-color="orange">SET</button>
+      <button class="allon-btn redA" data-func="allon" data-color="red">SET</button>
+
+      <button class="allon-btn pnkA" data-func="allon" data-color="pink">SET</button>
+      <button class="allon-btn grnA" data-func="allon" data-color="green">SET</button>
+
+      <button class="allon-btn purA" data-func="allon" data-color="purple">SET</button>
+      <button class="allon-btn slvA" data-func="allon" data-color="silver">SET</button>
     </div>
+
     <div class="option2 flicker-options">
       <h2>Flicker Options</h2>
-      <button class="color-btn grnA" data-func="flicker" data-color="green">FLICKER</button>
-      <button class="color-btn redA" data-func="flicker" data-color="red">FLICKER</button>
+
       <button class="color-btn ylwA" data-func="flicker" data-color="yellow">FLICKER</button>
       <button class="color-btn bluA" data-func="flicker" data-color="blue">FLICKER</button>
-      <button class="color-btn slvA" data-func="flicker" data-color="silver">FLICKER</button>
-      <button class="color-btn pnkA" data-func="flicker" data-color="pink">FLICKER</button>
-      <button class="color-btn purA" data-func="flicker" data-color="purple">FLICKER</button>
+
       <button class="color-btn orgA" data-func="flicker" data-color="orange">FLICKER</button>
+      <button class="color-btn redA" data-func="flicker" data-color="red">FLICKER</button>
+
+      <button class="color-btn pnkA" data-func="flicker" data-color="pink">FLICKER</button>
+      <button class="color-btn grnA" data-func="flicker" data-color="green">FLICKER</button>
+
+      <button class="color-btn purA" data-func="flicker" data-color="purple">FLICKER</button>
+      <button class="color-btn slvA" data-func="flicker" data-color="silver">FLICKER</button>
 
       <button>Probability (W &uarr; &nbsp; S &darr;)<br> <span style="color:white" class="prob"></span></button>
     </div>
+
     <br>
     <h2>TEAM COLOR Hotkeys</h2>
     <p style="text-align:center"><span class="whtA">&nbsp;L&nbsp;</span><span class="redA">&nbsp;R </span> <span class="orgA">&nbsp;O </span> <span class="ylwA">&nbsp;Y </span> <span class="grnA">&nbsp;G </span> <span class="bluA">&nbsp;B </span> <span class="slvA">&nbsp;V </span> <span class="pnkA">&nbsp;P </span> <span class="purA">&nbsp;U&nbsp;</span><span class="blkB">&nbsp;X&nbsp;</span><p>
     <button class="blackout blackout-btn">Blackout</button>
   </div>
+  
   <div class="map">
   </div>
   <div class="bash">

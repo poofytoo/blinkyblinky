@@ -98,23 +98,23 @@ function startSerialPort(port) {
         */
         /* ALL TEAM COLORS TEST */
         if (process.argv.indexOf("test") > -1) {
-            var colors = ["red", "orange", "yellow", "green", "blue", "silver", "pink", "purple"]
+            var colors = ["red", "green", "blue"]
             var colorsLED = {
-                "blue": [0, 16, 80],
-                "green": [5, 80, 5],
+                "blue": [0, 0, 80],
+                "green": [0, 80, 0],
                 "orange": [64, 40, 0],
                 "pink": [80, 32, 64],
                 "purple": [22, 0, 66],
-                "red": [80, 4, 4],
+                "red": [80, 0, 0],
                 "silver": [36, 72, 72],
                 "yellow": [50, 72, 0]
             }
             c = -1
             setInterval(function() {
                 c = (c + 1) % colors.length;
-                data = [55, 55, 0, colorsLED[colors[c]][0], colorsLED[colors[c]][1], colorsLED[colors[c]][2], colorsLED[colors[c]][0], 43]
+                data = [55, 55, 0, colorsLED[colors[c]][0], colorsLED[colors[c]][1], colorsLED[colors[c]][2], 43]
                 s.write(data, function(err, results){
-
+                  //console.log(results)
                 })
             }, 500);
         } else {

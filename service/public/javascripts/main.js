@@ -1,4 +1,4 @@
-const PROPOGATE_RATE = 300
+const PROPAGATE_RATE = 300
 
 const PAPARAZZI_RATE = 400
 const PAPARAZZI_LED = ["64", "A0", "A0"] // HEX
@@ -14,7 +14,16 @@ const twinkleIntervalMeter = [1000 / 7.5, 1000 / 5.0, 1000 / 4.0, 1000 / 3.0, 10
 const brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
 const probMeter = [20, 30, 45, 60, 80, 100, 125, 150, 180, 215, 255]
 
-const coloredKeys = {"R": "red", "O": "orange", "Y": "yellow", "G": "green", "B": "blue", "P": "pink", "U": "purple", "V": "silver"}
+const coloredKeys = {
+    "R": "red",
+    "O": "orange",
+    "Y": "yellow",
+    "G": "green",
+    "B": "blue",
+    "P": "pink",
+    "U": "purple",
+    "V": "silver"
+}
 
 var state = '';
 
@@ -155,7 +164,7 @@ function startTwinkle(interval) {
             for (i in seats) {
                 $this = $('#' + i)
                 seatColor = getRandomColor();
-                setSeatColorBrightness($this, colorsCSS[seatColor], 0.3 + 0.7 * twinkleBrightness / 255);
+                setSeatColorBrightness($this, seatColor, 0.3 + 0.7 * twinkleBrightness / 255);
             }
         })
     }, interval)
@@ -203,7 +212,7 @@ function startFlicker(interval, colorLED, colorCSS) {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
-                setTimeout(function(){Blackout()}, PAPARAZZI_RATE / 2)
+                setTimeout(Blackout, PAPARAZZI_RATE / 2)
                 for (i in seats) {
                     $this = $('#' + i)
                     if (Math.random() < prob / 255) {
@@ -215,14 +224,63 @@ function startFlicker(interval, colorLED, colorCSS) {
     })
 }
 
-function flash($this, seatColor) {
-    $this.css('background-color', seatColor)
-    setTimeout(function() {
-        $this.css('background-color', "#333333")
-    }, 250)
+function propagateRandom(color) {
+    clearInterval(timer)
+    colorLED = colorsLED[color]
+    colorCSS = colorsCSS[color]
+    P = 16
+    R = 175
+    timer = setInterval(function() {
+        command = "37 37 2 " + colorLED.join(" ") + " " + P.toString(16).toUpperCase() + " 2B"
+        sendData = {
+            s: command
+        }
+        if (P < 255) {
+            console.log(P)
+            $.get('/manualserial', sendData, function(data) {
+                for (i in seats) {
+                    $this = $('#' + i)
+                    if (Math.random() < P / 255) {
+                        flash($this, colorCSS)
+                    }
+                }
+                P = Math.round(P * 1.2)
+            })
+        } else {
+            clearInterval(timer)
+            AllOn(colorLED, colorCSS)
+        }
+    }, R);
 }
 
-function startPropogate(interval, colorLED, colorCSS) {
+function teamTwinkle() {
+    clearInterval(timer)
+    c = Math.floor(Math.random() * colors.length)
+    P = 50
+    timer = setInterval(function() {
+        c = (c + 1) % colors.length
+        colorLED = colorsLED[colors[c]]
+        colorCSS = colorsCSS[colors[c]]
+        command = "37 37 2 " + colorLED.join(" ") + " " + P.toString(16).toUpperCase() + " 2B"
+        sendData = {
+            s: command
+        }
+        $.get('/manualserial', sendData, function(data) {
+            for (i in seats) {
+                $this = $('#' + i)
+                if (Math.random() < prob / 255) {
+                    flash($this, colorCSS)
+                }
+            }
+        })
+    }, twinkleInterval)
+}
+
+function flash($this, seatColor) {
+    $this.css('background-color', seatColor)
+}
+
+function startPropagate(interval, colorLED, colorCSS) {
     clearInterval(timer)
     var row_i = 0
     nextRow = function(pause, row_i) {
@@ -259,7 +317,9 @@ function startPropogate(interval, colorLED, colorCSS) {
             }
         }
     }, animationRefreshRate);
-}*/
+}
+
+animationRefreshRate = 150
 
 /*function startTheSlots(timeStayRandom, timeToReveal, finalColor) {
     setDateStart = new Date().getTime() + timeToReveal;
@@ -285,8 +345,17 @@ function startPropogate(interval, colorLED, colorCSS) {
     return '#' + rgbColor[0].toString(16) + rgbColor[1].toString(16) + rgbColor[2].toString(16);
 }*/
 
-function getRandomColor() {
+function getRandomTeamColor() {
     return colors[Math.floor(Math.random() * colors.length)]
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 function init() {
@@ -491,16 +560,19 @@ $(document).on('keydown', function(e) {
         // "X" for blackout
         clearInterval(timer)
         Blackout()
-    } else if (String.fromCharCode(e.which) in coloredKeys && !holding && !keydown){
+    } else if (String.fromCharCode(e.which) in coloredKeys && !holding && !keydown) {
         holding = true
         color = coloredKeys[String.fromCharCode(e.which)]
         if (active == "flicker") {
             clearInterval(timer)
             startFlicker(PAPARAZZI_RATE, colorsLED[color], colorsCSS[color])
             holding = false;
-        } else if (active == "propogate") {
-            startPropogate(PROPOGATE_RATE, colorsLED[color], colorsCSS[color]);
+        } else if (active == "propagate") {
+            startPropagate(PROPAGATE_RATE, colorsLED[color], colorsCSS[color]);
             holding = false;
+        } else if (active == "propagate-random") {
+            propagateRandom(color)
+            holding = false
         } else if (active == "allon") {
             clearInterval(timer)
             AllOn(colorsLED[color], colorsCSS[color])
@@ -509,9 +581,9 @@ $(document).on('keydown', function(e) {
             clearInterval(timer)
             AllOn(colorsLED[color], colorsCSS[color])
         }
-    } 
+    }
     keydown = true
-}).on("keyup", function(e){
+}).on("keyup", function(e) {
     if (holding) {
         holding = false;
         keydown = false;
@@ -539,6 +611,9 @@ function startLights($this) {
             $("#twinkle-rate").html(Math.round(10000 / twinkleInterval) / 10 + " Hz")
             startTwinkle(twinkleInterval);
             break;
+        case 'team-twinkle':
+            teamTwinkle();
+            break;
         case 'paparazzi':
             Blackout();
             $(".prob").html(prob);
@@ -565,11 +640,15 @@ function startLights($this) {
             break;
         case 'beacon':
             break;
-        case 'propogate':
+        case 'propagate':
             color = $this.data("color")
             colorLED = colorsLED[color]
             colorCSS = colorsCSS[color]
-            startPropogate(PROPOGATE_RATE, colorLED, colorCSS);
+            startPropagate(PROPAGATE_RATE, colorLED, colorCSS);
+            break;
+        case 'propagate-random':
+            color = $this.data("color")
+            propagateRandom(color)
             break;
         case 'slots':
             color = $this.css('background-color');
