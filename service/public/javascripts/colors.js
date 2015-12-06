@@ -1,4 +1,5 @@
 const colors = ["red", "orange", "yellow", "green", "blue", "silver", "pink", "purple"]
+const waveOrder = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "silver"]
 
 var root = new Firebase("https://blinkyblinky.firebaseio.com")
 var colorsLED = {
@@ -9,7 +10,8 @@ var colorsLED = {
     "purple": ["16", "0", "42"],
     "red": ["50", "4", "4"],
     "silver": ["24", "48", "48"],
-    "yellow": ["32", "48", "0"]
+    "yellow": ["32", "48", "0"],
+    "white": ["64", "A0", "A0"]
 }
 var colorsFlicker = {
     "blue": ["0", "30", "FF"],
@@ -19,7 +21,8 @@ var colorsFlicker = {
     "purple": ["40", "0", "FF"],
     "red": ["FF", "12", "12"],
     "silver": ["24", "48", "48"],
-    "yellow": ["32", "48", "0"]
+    "yellow": ["32", "48", "0"],
+    "white": ["64", "A0", "A0"]
 }
 var BLACKOUT_COMMAND = {
     s: "37 37 0 3 9 9 2B"
@@ -86,3 +89,4 @@ colorsCSS["blue"] = "#1f5cd4"
 colorsCSS["purple"] = "#9100ff"
 colorsCSS["silver"] = "#9e9e9e"
 colorsCSS["pink"] = "#fc40be"
+colorsCSS["white"] = "#ffffff"

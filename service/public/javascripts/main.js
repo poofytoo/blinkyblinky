@@ -54,6 +54,7 @@ var baconRingDistance = 120;
 
 var allowBeaconStart = false;
 var timer;
+var timeout;
 
 //***************************//
 //     SIMULATION UTILS     //
@@ -75,7 +76,7 @@ function setSeatColorBrightness($this, colorCSS, seatAlpha) {
     $this.css('background-color', "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", " + seatAlpha + ")")
 }
 
-function setRowColor(row_ind, colorLED, colorCSS) {
+function setRowColor(row_ind, colorLED, colorCSS, callback) {
     command = "37 37 1 " + colorLED.join(" ") + " " + row_ind.toString(16).toUpperCase() + " 2B"
     sendData = {
         s: command
@@ -88,7 +89,21 @@ function setRowColor(row_ind, colorLED, colorCSS) {
             $this = $('#' + seats_by_row[rowId][i].id)
             $this.css('background-color', colorCSS)
         }
+        if (callback) {
+            callback();
+        }
     })
+}
+
+function flickerRow(row_ind, colorLED, colorCSS) {
+    clearInterval(timer);
+    timer = setInterval(function() {
+        setRowColor(row_ind, colorLED, colorCSS, function() {
+            setTimeout(function() {
+                setRowColor(row_ind, BLACKOUT_LED, "#333333")
+            }, PAPARAZZI_RATE / 2)
+        })
+    }, PAPARAZZI_RATE)
 }
 
 var updateRate = 50;
@@ -122,13 +137,13 @@ function startTheWave() {
         }
         if (r == 0) {
             Blackout()
-            c = Math.floor(Math.random() * colors.length)
+            c = (c + 1) % waveOrder.length
             up = true
         }
         row_ind = getRowIndex(rows[r]) || 0
         if (row_ind >= 1 && row_ind <= rows.length) {
-            c = (c + 1) % colors.length
-            color = colors[c]
+            c = (c + (up ? 1 : -1) + waveOrder.length) % waveOrder.length
+            color = waveOrder[c]
             colorLED = colorsLED[color]
             colorCSS = colorsCSS[color]
             setRowColor(row_ind, colorLED, colorCSS);
@@ -186,7 +201,7 @@ function startPaparazzi() {
 
 function startFlicker(color) {
     clearInterval(timer)
-    colorLED = colorsLED[color]
+    colorLED = colorsFlicker[color]
     colorCSS = colorsCSS[color]
     Blackout(function() {
         timer = setInterval(function() {
@@ -195,7 +210,7 @@ function startFlicker(color) {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
-                setTimeout(Blackout, PAPARAZZI_RATE / 2)
+                timeout = setTimeout(Blackout, PAPARAZZI_RATE / 2)
                 for (i in seats) {
                     $this = $('#' + i)
                     if (Math.random() < prob / 255) {
@@ -240,7 +255,7 @@ function teamTwinkle() {
     P = 70
     timer = setInterval(function() {
         c = (c + 1) % colors.length
-        colorLED = colorsLED[colors[c]]
+        colorLED = colorsFlicker[colors[c]]
         colorCSS = colorsCSS[colors[c]]
         command = "37 37 2 " + colorLED.join(" ") + " " + P.toString(16).toUpperCase() + " 2B"
         sendData = {
@@ -263,7 +278,7 @@ function teamTwinkle() {
 
 function propagateRandom(color) {
     clearInterval(timer)
-    colorLED = colorsLED[color]
+    colorLED = colorsFlicker[color]
     colorCSS = colorsCSS[color]
     P = 16
     R = 175
@@ -390,6 +405,8 @@ function Dim(callback) {
 }
 
 function AllOn(colorLED, colorCSS, callback) {
+    clearInterval(timer)
+    clearTimeout(timeout)
     command = "37 37 0 " + colorLED.join(" ") + " 2B"
     sendData = {
         s: command
@@ -719,4 +736,6 @@ $(function() {
     init();
 });
 
-RESET = function(){clearInterval(timer)}
+RESET = function() {
+    clearInterval(timer)
+}
