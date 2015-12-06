@@ -14,6 +14,8 @@ const twinkleIntervalMeter = [1000 / 7.5, 1000 / 5.0, 1000 / 4.0, 1000 / 3.0, 10
 const brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
 const probMeter = [20, 30, 45, 60, 80, 100, 125, 150, 180, 215, 255]
 
+const coloredKeys = {"R": "red", "O": "orange", "Y": "yellow", "G": "green", "B": "blue", "P": "pink", "U": "purple", "V": "silver"}
+
 var state = '';
 
 var audWidth = 0
@@ -431,6 +433,8 @@ $(document).on('keydown', '.prompt', function(e) {
     }
 });
 
+var holding = false;
+var keydown = false;
 $(document).on('keydown', function(e) {
     if (active == "twinkle") {
         if (e.which == 87) {
@@ -477,6 +481,43 @@ $(document).on('keydown', function(e) {
         waveRate = waveIntervalMeter[waveIntervalLevel]
         $("#waverate").html(Math.round(10000 / waveRate) / 10 + " Hz")
         startTheWave()
+    }
+    if (e.which == 76 && !holding && !keydown) {
+        // "L" for white light
+        clearInterval(timer)
+        holding = true
+        AllOn(PAPARAZZI_LED, "#FFFFFF");
+    } else if (e.which == 88 && !holding && !keydown) {
+        // "X" for blackout
+        clearInterval(timer)
+        Blackout()
+    } else if (String.fromCharCode(e.which) in coloredKeys && !holding && !keydown){
+        holding = true
+        color = coloredKeys[String.fromCharCode(e.which)]
+        if (active == "flicker") {
+            clearInterval(timer)
+            startFlicker(PAPARAZZI_RATE, colorsLED[color], colorsCSS[color])
+            holding = false;
+        } else if (active == "propogate") {
+            startPropogate(PROPOGATE_RATE, colorsLED[color], colorsCSS[color]);
+            holding = false;
+        } else if (active == "allon") {
+            clearInterval(timer)
+            AllOn(colorsLED[color], colorsCSS[color])
+            holding = false;
+        } else {
+            clearInterval(timer)
+            AllOn(colorsLED[color], colorsCSS[color])
+        }
+    } 
+    keydown = true
+}).on("keyup", function(e){
+    if (holding) {
+        holding = false;
+        keydown = false;
+        Blackout();
+    } else if (keydown) {
+        keydown = false;
     }
 })
 

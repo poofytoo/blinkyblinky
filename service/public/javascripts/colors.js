@@ -22,10 +22,10 @@ var colorsFlicker = {
     "yellow": ["32", "48", "0"]
 }
 var BLACKOUT_COMMAND = {
-    s: "37 37 0 4 B B 2B"
+    s: "37 37 0 3 9 9 2B"
 }
 var DIM_COMMAND = {
-    s: "37 37 0 4 B B 2B"
+    s: "37 37 0 3 9 9 2B"
 }
 
 root.child("colorsLED").on("value", function(ss) {

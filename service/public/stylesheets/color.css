@@ -97,9 +97,11 @@ BLK
 WHT
 ========================================================================== */
 .whtA {
+  color: black;
   background-color: #fff;
 }
 .whtB {
+  color: black;
   background-color: #ffffff;
 }
 
