@@ -61,7 +61,7 @@ for (i in raw_seats) {
   } 
   seats_by_row[row_id].push({id: i, x: raw_seats[i].x/1.3 - 50, y: raw_seats[i].y/1.3 + 10})
 }
-idToInd = {"D": 1, "E": 2, "F": 3, "G": 4, "H": 5, "J": 6, "K": 7, "L": 8, "M": 9, "N": 10, "O": 11, "P": 12, "R": 13, "S": 14}
+idToInd = {"E": 1, "F": 2, "G": 3, "H": 4, "J": 5, "K": 6, "L": 7, "M": 8, "N": 9, "O": 10, "P": 11, "R": 12, "S": 13}
 for (id in idToInd) {
     rows.push(id)
 }

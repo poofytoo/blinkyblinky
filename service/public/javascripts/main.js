@@ -1,27 +1,28 @@
 //***********************//
 // CONSTANTS and METERS //
 //*********************//
-const PROPAGATE_RATE = 325
+const PROPAGATE_RATE = 400
+const PROPAGATE_PROB = 35
 
-const PAPARAZZI_RATE = 500
-const PAPARAZZI_LED = ["64", "A0", "A0"] // HEX
+const PAPARAZZI_RATE = 600
+const PAPARAZZI_LED = ["60", "FF", "FF"] // HEX
 
 const RAINBOW_RATE = 1000
 
-const FADE_RATE = 150
+const FADE_RATE = 300
 const FADE_FACTOR = 0.83
-const RED_ATTENUATION_FACTOR = 0.6
+const RED_ATTENUATION_FACTOR = 0.45
 
-const waveFrequencies = [10, 8, 6, 5, 4, 3, 2, 1] // Hz
+const waveFrequencies = [5, 4, 3, 2.5, 2, 1.5, 1] // Hz
 const waveIntervalMeter = waveFrequencies.map(function(Hz) {
     return 1000 / Hz;
 })
-const twinkleFrequencies = [10, 8, 7, 6, 5, 4, 3, 2, 1]
+const twinkleFrequencies = [3, 2.5, 2, 1.5, 1]
 const twinkleIntervalMeter = twinkleFrequencies.map(function(Hz) {
     return 1000 / Hz;
 })
 const brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
-const probMeter = [20, 30, 45, 60, 80, 100, 125, 150, 180, 215, 255]
+const probMeter = [45, 60, 80, 100, 125, 150, 180, 215, 255]
 
 const escapeVals = [43, 47, 53, 55]
 
@@ -36,7 +37,16 @@ const coloredKeys = {
     "B": "blue",
     "P": "pink",
     "U": "purple",
-    "V": "silver"
+    "V": "silver",
+    "0": "white",
+    "8": "pink",
+    "7": "red",
+    "6": "blue",
+    "5": "purple",
+    "4": "silver",
+    "3": "yellow",
+    "2": "orange",
+    "1": "green"
 }
 
 
@@ -134,10 +144,10 @@ function startTheWave() {
         r = r + (up ? 1 : -1)
         if (r == rows.length - 1) {
             up = false
+            c = (c + 4) % waveOrder.length
         }
         if (r == 0) {
             Blackout()
-            c = (c + 1) % waveOrder.length
             up = true
         }
         row_ind = getRowIndex(rows[r]) || 0
@@ -251,25 +261,39 @@ function startTwinkle() {
 
 function teamTwinkle() {
     clearInterval(timer)
-    c = Math.floor(Math.random() * colors.length)
-    P = 70
-    timer = setInterval(function() {
-        c = (c + 1) % colors.length
-        colorLED = colorsFlicker[colors[c]]
-        colorCSS = colorsCSS[colors[c]]
-        command = "37 37 2 " + colorLED.join(" ") + " " + P.toString(16).toUpperCase() + " 2B"
-        sendData = {
-            s: command
+    var command = "37 37 4 " + twinkleBrightness.toString(16).toUpperCase() + " 2B"
+    sendData = {
+        s: command
+    }
+    $.get('/manualserial', sendData, function(data) {
+        //console.log(data)
+        for (i in seats) {
+            $this = $('#' + i)
+            seatColor = getRandomColor();
+            setSeatColorBrightness($this, seatColor, 0.3 + 0.7 * twinkleBrightness / 255);
         }
-        $.get('/manualserial', sendData, function(data) {
-            for (i in seats) {
-                $this = $('#' + i)
-                if (Math.random() < prob / 255) {
-                    flash($this, colorCSS)
-                }
+        clearInterval(timer)
+        var c = Math.floor(Math.random() * colors.length)
+        var P = 60
+        var shuffled_colors = shuffle(colors);
+        timer = setInterval(function() {
+            c = (c + 1) % colors.length
+            var colorLED = colorsFlicker[shuffled_colors[c]]
+            var colorCSS = colorsCSS[shuffled_colors[c]]
+            var command = "37 37 2 " + colorLED.join(" ") + " " + P.toString(16).toUpperCase() + " 2B"
+            sendData = {
+                s: command
             }
-        })
-    }, twinkleInterval)
+            $.get('/manualserial', sendData, function(data) {
+                for (i in seats) {
+                    $this = $('#' + i)
+                    if (Math.random() < P / 255) {
+                        flash($this, colorCSS)
+                    }
+                }
+            })
+        }, twinkleInterval)
+    })
 }
 
 //***************************//
@@ -280,8 +304,7 @@ function propagateRandom(color) {
     clearInterval(timer)
     colorLED = colorsFlicker[color]
     colorCSS = colorsCSS[color]
-    P = 16
-    R = 175
+    var P = PROPAGATE_PROB
     timer = setInterval(function() {
         command = "37 37 2 " + colorLED.join(" ") + " " + P.toString(16).toUpperCase() + " 2B"
         sendData = {
@@ -296,13 +319,18 @@ function propagateRandom(color) {
                     }
                 }
                 P = Math.round(P * 1.2)
+                if (escapeVals.indexOf(P) > -1) {
+                    P -= 1;
+                }
             })
         } else {
             clearInterval(timer)
-            AllOn(colorLED, colorCSS, AllOn(colorLED, colorCSS))
+            AllOn(colorLED, colorCSS, function() {
+                AllOnSpam(colorLED, colorCSS)
+            })
             return;
         }
-    }, R);
+    }, FADE_RATE);
 }
 
 function startPropagate(color) {
@@ -311,15 +339,16 @@ function startPropagate(color) {
     colorCSS = colorsCSS[color]
     var row_i = 0
     nextRow = function(pause, row_i) {
+        console.log(pause)
         if (row_i < rows.length) {
             row_i += 1
             setRowColor(row_i, colorLED, colorCSS)
             timer = setTimeout(function() {
-                nextRow(Math.max(100, pause * 0.9), row_i)
+                nextRow(Math.max(100, pause * 0.92), row_i)
             }, pause)
         } else {
             clearInterval(timer)
-            AllOn(colorLED, colorCSS, AllOn(colorLED, colorCSS))
+            AllOnSpam(colorLED, colorCSS)
             return;
         }
     }
@@ -347,7 +376,7 @@ function startRetract() {
 
 function FadeDown() {
     clearInterval(timer)
-    AllOn(["99", "FF", "FF"], "#FFFFFF")
+    AllOn(PAPARAZZI_LED, "#FFFFFF")
     brightness = 280
     timer = setInterval(function() {
         if (brightness >= 16) {
@@ -418,6 +447,24 @@ function AllOn(colorLED, colorCSS, callback) {
             callback();
         }
     })
+}
+
+function AllOnSpam(colorLED, colorCSS, callback) {
+    clearInterval(timer)
+    clearTimeout(timeout)
+    command = "37 37 0 " + colorLED.join(" ") + " 2B"
+    sendData = {
+        s: command
+    }
+    timer = setInterval(function() {
+        $.get('/manualserial', sendData, function(data) {
+            //console.log(data)
+            $(".seat").css("background-color", colorCSS)
+            if (callback) {
+                callback();
+            }
+        })
+    }, 500);
 }
 
 /*function startTheBacon(x, y) {
@@ -519,6 +566,7 @@ $(document).on('click', '.command', function(e) {
         case 'slots':
             break;
     }
+    console.log(active)
 })
 
 $(document).on('click', '.allon-btn', function(e) {
@@ -630,6 +678,11 @@ $(document).on('keydown', function(e) {
         // "X" for blackout
         clearInterval(timer);
         Blackout();
+    } else if (e.which == 84) {
+        // "T" for twinkle
+        clearInterval(timer);
+        $("button[data-func='team-twinkle']").click();
+        teamTwinkle();
     } else if (String.fromCharCode(e.which) in coloredKeys && !holding && !keydown) {
         holding = true
         color = coloredKeys[String.fromCharCode(e.which)]
@@ -638,6 +691,7 @@ $(document).on('keydown', function(e) {
             startFlicker(color);
             holding = false;
         } else if (active == "propagate") {
+            console.log(String.fromCharCode(e.which))
             startPropagate(color);
             holding = false;
         } else if (active == "propagate-random") {
@@ -645,7 +699,7 @@ $(document).on('keydown', function(e) {
             holding = false;
         } else if (active == "allon") {
             clearInterval(timer);
-            AllOn(colorsLED[color], colorsCSS[color]);
+            AllOnSpam(colorsLED[color], colorsCSS[color]);
             holding = false;
         } else {
             clearInterval(timer);
@@ -654,12 +708,25 @@ $(document).on('keydown', function(e) {
     }
     keydown = true
 }).on("keyup", function(e) {
+    console.log(e.which)
     if (holding) {
         holding = false;
         keydown = false;
         Blackout();
     } else if (keydown) {
         keydown = false;
+    }
+    if (e.which == 13) {
+        // ENTER to run active command
+        $(".run-btn[data-func='" + active + "']").click();
+    } else if (e.which == 27) {
+        // ESC key
+        RESET();
+    } else if (e.which == 188) {
+        $("button.command[data-func='propagate']").click();
+    } else if (e.which == 190) {
+        $("button.command[data-func='retract']").click();
+        startRetract();
     }
 });
 
@@ -697,12 +764,13 @@ function startLights($this) {
             color = $this.data("color")
             colorLED = colorsLED[color]
             colorCSS = colorsCSS[color]
-            AllOn(colorLED, colorCSS)
+            AllOnSpam(colorLED, colorCSS)
             break;
         case 'beacon':
             break;
         case 'propagate':
             color = $this.data("color")
+            console.log(color)
             startPropagate(color);
             break;
         case 'propagate-random':
@@ -737,5 +805,7 @@ $(function() {
 });
 
 RESET = function() {
+    $(".command").removeClass("active")
+    active = "";
     clearInterval(timer)
 }

@@ -1,5 +1,5 @@
 const colors = ["red", "orange", "yellow", "green", "blue", "silver", "pink", "purple"]
-const waveOrder = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "silver"]
+const waveOrder = ["red", "orange", "yellow", "green", "blue", "purple", "silver", "pink"]
 
 var root = new Firebase("https://blinkyblinky.firebaseio.com")
 var colorsLED = {
@@ -11,7 +11,7 @@ var colorsLED = {
     "red": ["50", "4", "4"],
     "silver": ["24", "48", "48"],
     "yellow": ["32", "48", "0"],
-    "white": ["64", "A0", "A0"]
+    "white": ["60", "FF", "FF"]
 }
 var colorsFlicker = {
     "blue": ["0", "30", "FF"],
@@ -22,7 +22,7 @@ var colorsFlicker = {
     "red": ["FF", "12", "12"],
     "silver": ["24", "48", "48"],
     "yellow": ["32", "48", "0"],
-    "white": ["64", "A0", "A0"]
+    "white": ["60", "FF", "FF"]
 }
 var BLACKOUT_COMMAND = {
     s: "37 37 0 3 9 9 2B"
@@ -30,7 +30,7 @@ var BLACKOUT_COMMAND = {
 var BLACKOUT_LED = ["3", "9", "9"]
 
 var DIM_COMMAND = {
-    s: "37 37 0 3 9 9 2B"
+    s: "37 37 0 6 12 12 2B"
 }
 
 root.child("colorsLED").on("value", function(ss) {
@@ -90,3 +90,23 @@ colorsCSS["purple"] = "#9100ff"
 colorsCSS["silver"] = "#9e9e9e"
 colorsCSS["pink"] = "#fc40be"
 colorsCSS["white"] = "#ffffff"
+
+function shuffle(array) {
+    var counter = array.length, temp, index;
+    var shuffled = array;
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        temp = array[counter];
+        shuffled[counter] = array[index];
+        shuffled[index] = temp;
+    }
+
+    return shuffled;
+}
