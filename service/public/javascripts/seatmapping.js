@@ -54,14 +54,14 @@ var rows = [];
 var seats = {};
 var seats_by_row = {};
 for (i in raw_seats) {
-  seats[i] = {x: raw_seats[i].x/1.3 - 50, y: raw_seats[i].y/1.3 + 10}
+  seats[i] = {x: raw_seats[i].x/1.3, y: raw_seats[i].y/1.3 + 10}
   row_id = i.charAt(0)
   if (seats_by_row[row_id] == undefined) {
     seats_by_row[row_id] = []
   } 
-  seats_by_row[row_id].push({id: i, x: raw_seats[i].x/1.3 - 50, y: raw_seats[i].y/1.3 + 10})
+  seats_by_row[row_id].push({id: i, x: raw_seats[i].x/1.3, y: raw_seats[i].y/1.3 + 10})
 }
-idToInd = {"E": 1, "F": 2, "G": 3, "H": 4, "J": 5, "K": 6, "L": 7, "M": 8, "N": 9, "O": 10, "P": 11, "R": 12, "S": 13}
+idToInd = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "H": 8, "J": 9, "K": 10, "L": 11, "M": 12, "N": 13, "O": 14, "P": 15, "R": 16, "S": 17}
 for (id in idToInd) {
     rows.push(id)
 }

@@ -11,7 +11,7 @@ var colorsLED = {
     "red": ["50", "4", "4"],
     "silver": ["24", "48", "48"],
     "yellow": ["32", "48", "0"],
-    "white": ["60", "FF", "FF"]
+    "white": ["50", "FF", "FF"]
 }
 var colorsFlicker = {
     "blue": ["0", "30", "FF"],
@@ -22,7 +22,7 @@ var colorsFlicker = {
     "red": ["FF", "12", "12"],
     "silver": ["24", "48", "48"],
     "yellow": ["32", "48", "0"],
-    "white": ["60", "FF", "FF"]
+    "white": ["50", "FF", "FF"]
 }
 var BLACKOUT_COMMAND = {
     s: "37 37 0 3 9 9 2B"

@@ -1,28 +1,33 @@
 //***********************//
 // CONSTANTS and METERS //
 //*********************//
-const PROPAGATE_RATE = 400
-const PROPAGATE_PROB = 35
+const PROPAGATE_RATE = 300
+const PROPAGATE_PROB = 30
+const TWINKLE_PROB = 30
 
-const PAPARAZZI_RATE = 600
-const PAPARAZZI_LED = ["60", "FF", "FF"] // HEX
+const PAPARAZZI_RATE = 400
+const PAPARAZZI_LED = ["5F", "FF", "FF"] // HEX
 
-const RAINBOW_RATE = 1000
+const RAINBOW_RATE = 500
 
-const FADE_RATE = 300
+const FADE_RATE = 200
 const FADE_FACTOR = 0.83
 const RED_ATTENUATION_FACTOR = 0.45
 
-const waveFrequencies = [5, 4, 3, 2.5, 2, 1.5, 1] // Hz
+const waveFrequencies = [15, 12, 10, 8, 6, 4, 3, 2, 1] // Hz
 const waveIntervalMeter = waveFrequencies.map(function(Hz) {
     return 1000 / Hz;
 })
-const twinkleFrequencies = [3, 2.5, 2, 1.5, 1]
+const twinkleFrequencies = [12, 10, 8, 6, 4, 3, 2, 1]
 const twinkleIntervalMeter = twinkleFrequencies.map(function(Hz) {
     return 1000 / Hz;
 })
+const flickerFrequencies = [3, 2.5, 2, 1.5, 1]
+const flickerIntervalMeter = flickerFrequencies.map(function(Hz) {
+    return 1000 / Hz;
+})
 const brightnessMeter = [2, 5, 10, 20, 40, 80, 160, 255]
-const probMeter = [45, 60, 80, 100, 125, 150, 180, 215, 255]
+const probMeter = [30, 45, 60, 80, 100, 125, 150, 180, 215, 255]
 
 const escapeVals = [43, 47, 53, 55]
 
@@ -209,6 +214,9 @@ function startPaparazzi() {
     })
 }
 
+flickerLevel = 0
+flickerInterval = flickerIntervalMeter[flickerLevel]
+
 function startFlicker(color) {
     clearInterval(timer)
     colorLED = colorsFlicker[color]
@@ -220,7 +228,8 @@ function startFlicker(color) {
                 s: command
             }
             $.get('/manualserial', sendData, function(data) {
-                timeout = setTimeout(Blackout, PAPARAZZI_RATE / 2)
+                clearTimeout(timeout)
+                timeout = setTimeout(Blackout, flickerInterval*2 - 300)
                 for (i in seats) {
                     $this = $('#' + i)
                     if (Math.random() < prob / 255) {
@@ -228,7 +237,7 @@ function startFlicker(color) {
                     }
                 }
             })
-        }, PAPARAZZI_RATE)
+        }, flickerInterval * 2)
     })
 }
 
@@ -274,7 +283,7 @@ function teamTwinkle() {
         }
         clearInterval(timer)
         var c = Math.floor(Math.random() * colors.length)
-        var P = 60
+        var P = TWINKLE_PROB
         var shuffled_colors = shuffle(colors);
         timer = setInterval(function() {
             c = (c + 1) % colors.length
@@ -310,6 +319,7 @@ function propagateRandom(color) {
         sendData = {
             s: command
         }
+        console.log(P)
         if (P < 0.5 * 255) {
             $.get('/manualserial', sendData, function(data) {
                 for (i in seats) {
@@ -452,22 +462,21 @@ function AllOn(colorLED, colorCSS, callback) {
 function AllOnSpam(colorLED, colorCSS, callback) {
     clearInterval(timer)
     clearTimeout(timeout)
-    command = "37 37 0 " + colorLED.join(" ") + " 2B"
-    sendData = {
-        s: command
-    }
-    timer = setInterval(function() {
-        $.get('/manualserial', sendData, function(data) {
-            //console.log(data)
-            $(".seat").css("background-color", colorCSS)
-            if (callback) {
-                callback();
-            }
-        })
-    }, 500);
+    AllOn(colorLED, colorCSS, function() {
+        command = "37 37 0 " + colorLED.join(" ") + " 2B"
+        sendData = {
+            s: command
+        }
+        timer = setInterval(function() {
+            $.get('/manualserial', sendData, function(data) {
+                //console.log(data)
+                $(".seat").css("background-color", colorCSS)
+            })
+        }, 500);
+    })
 }
 
-/*function startTheBacon(x, y) {
+function startTheBacon(x, y) {
     baconOriginX = x;
     baconOriginY = y;
     setDateStart = new Date().getTime();
@@ -513,13 +522,13 @@ animationRefreshRate = 150
     return '#' + rgbColor[0].toString(16) + rgbColor[1].toString(16) + rgbColor[2].toString(16);
 }*/
 
-/* $(document).on('click', '.map', function(e) {
+$(document).on('click', '.map', function(e) {
     if (allowBeaconStart) {
         x = e.pageX - 250;
         y = e.pageY;
         startTheBacon(x, y)
     }
-}) */
+})
 
 
 //***************************//
@@ -638,14 +647,10 @@ $(document).on('keydown', function(e) {
             // "D" - faster twinkle rate
             twinkleIntervalLevel = Math.max(twinkleIntervalLevel - 1, 0);
             twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel];
-            clearInterval(timer);
-            startTwinkle();
         } else if (e.which == 65) {
             // "A" - slower twinkle rate
             twinkleIntervalLevel = Math.min(twinkleIntervalLevel + 1, twinkleIntervalMeter.length - 1);
             twinkleInterval = twinkleIntervalMeter[twinkleIntervalLevel];
-            clearInterval(timer)
-            startTwinkle();
         }
     } else if (active == "paparazzi" || active == "flicker") {
         if (e.which == 87) {
@@ -654,6 +659,14 @@ $(document).on('keydown', function(e) {
         } else if (e.which == 83) {
             // "S" - decrease probability
             probLevel = Math.max(0, probLevel - 1)
+        } else if (e.which == 68) {
+            // "D" - faster flicker rate
+            flickerLevel = Math.max(flickerLevel - 1, 0);
+            flickerInterval = flickerIntervalMeter[flickerLevel];
+        } else if (e.which == 65) {
+            // "A" - slower flicker rate
+            flickerLevel = Math.min(flickerLevel + 1, flickerIntervalMeter.length - 1);
+            flickerInterval = flickerIntervalMeter[flickerLevel];
         }
         prob = probMeter[probLevel];
         $(".prob").html(prob);
@@ -691,7 +704,6 @@ $(document).on('keydown', function(e) {
             startFlicker(color);
             holding = false;
         } else if (active == "propagate") {
-            console.log(String.fromCharCode(e.which))
             startPropagate(color);
             holding = false;
         } else if (active == "propagate-random") {
@@ -727,6 +739,10 @@ $(document).on('keydown', function(e) {
     } else if (e.which == 190) {
         $("button.command[data-func='retract']").click();
         startRetract();
+    } else if (e.which == 220) {
+        $("button.command[data-func='allon']").click();
+    } else if (e.which == 189) {
+        $("button.command[data-func='flicker']").click();
     }
 });
 
@@ -770,7 +786,6 @@ function startLights($this) {
             break;
         case 'propagate':
             color = $this.data("color")
-            console.log(color)
             startPropagate(color);
             break;
         case 'propagate-random':

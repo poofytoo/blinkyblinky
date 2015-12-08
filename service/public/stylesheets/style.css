@@ -7,6 +7,7 @@ body {
     position: relative;
     height: 100%;
     background-color: #111;
+    overflow-y: auto;
 }
 
 a {
@@ -33,9 +34,9 @@ h2 {
     left: 0;
     width: 200px;
     margin-bottom: 0;
-    padding: 30px 0;
+    padding: 24px 0;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
     background-color: #222;
     color: #eee;
 }
@@ -53,10 +54,10 @@ button {
     background-color: #aaa;
     border: 0;
     margin-bottom: 2px;
-    padding: 10px 0;
+    padding: 8px 0;
     outline: none;
     font-family: "Lato", "Lucida Grande", sans-serif;
-    font-size: 15px;
+    font-size: 13px;
     text-transform: uppercase;
     font-weight: 300;
 }
@@ -144,10 +145,10 @@ button.active:hover {
 .run-btn {
     margin: 0 auto;
     font-weight: 600;
-    padding: 20px 0;
+    padding: 16px 0;
     background-color: #F01111;
     color: #eee;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .run-btn:hover {
@@ -177,10 +178,11 @@ button.active:hover {
     display: inline-block;
     background-color: #333;
     vertical-align: top;
-    width: 200px;
+    width: 180px;
     height: 100%;
     color: #eee;
     float: right;
+    top: 0;
     margin-right: 0px;
 }
 
@@ -189,7 +191,7 @@ button.active:hover {
     display: inline-block;
     vertical-align: top;
     height: 100%;
-    width: 700px;
+    width: 50vw;
     float: left;
     position: relative;
 }
